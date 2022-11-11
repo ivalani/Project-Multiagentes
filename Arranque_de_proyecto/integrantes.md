@@ -19,70 +19,65 @@
 
 ## _Fortalezas y debilidades del equipo_
 
-## <center>**integrante**</center>
+## <center>**Andrea Serrano Diego**</center>
 
 <div style="margin-left: auto;
             margin-right: auto;
             width: 30%">
 
-|      Fortallezas   |  Debilidades  |
-|         -          |      -        |
-|  Trabajo en equipo | Organización  |
-|    Responsable     | Concentración |
-| Buena comunicación |       -       |
+|      Fortallezas                      |  Debilidades                     |
+|         -                             |      -                           |
+|  Resolución de problemas.             | Manejo de nuevas herramientas.   |
+| Responsable con las tareas asignadas. |                                  |
 </div>
 
-## <center>**integrante**</center>
+## <center>**Diego Mellado Oliveros**</center>
 
 <div style="margin-left: auto;
             margin-right: auto;
             width: 30%">
 
-|      Fortallezas   |  Debilidades  |
-|         -          |      -        |
-|  Trabajo en equipo | Organización  |
-|    Responsable     | Concentración |
-| Buena comunicación |       -       |
+|      Fortallezas                      |  Debilidades                     |
+|         -                             |      -                           |
+|  Aprendizaje autodidacta.             | Creatividad y diseño.            |
+| Responsable con las tareas asignadas. |                                  |
 </div>
 
-## <center>**integrante**</center>
+## <center>**Tonatiuh Reyes Huerta**</center>
 
 <div style="margin-left: auto;
             margin-right: auto;
             width: 30%">
 
-|      Fortallezas   |  Debilidades  |
-|         -          |      -        |
-|  Trabajo en equipo | Organización  |
-|    Responsable     | Concentración |
-| Buena comunicación |       -       |
+|      Fortallezas                      |  Debilidades                     |
+|         -                             |      -                           |
+|  Creatividad                          | Manejo del estrés                |
+| Buena comunicación                    |                                  |
 </div>
 
-## <center>**integrante**</center>
+## <center>**Iwalani Amador Piaga**</center>
 
 <div style="margin-left: auto;
             margin-right: auto;
             width: 30%">
 
-|      Fortallezas   |  Debilidades  |
-|         -          |      -        |
-|  Trabajo en equipo | Organización  |
-|    Responsable     | Concentración |
-| Buena comunicación |       -       |
+|      Fortallezas                      |  Debilidades                     |
+|         -                             |      -                           |
+|Organización de trabajo y documentación| Explicación de ideas             |
+| Trabajo en equipo                     |                                  |
 </div>
 
 
-## <center>**integrante**</center>
+## <center>**Alfredo Jeong Hyun Park**</center>
 
 <div style="margin-left: auto;
             margin-right: auto;
             width: 30%">
 
-|      Fortallezas   |  Debilidades  |
-|         -          |      -        |
-|  Trabajo en equipo | Organización  |
-|    Responsable     | Concentración |
-| Buena comunicación |       -       |
+|      Fortallezas                      |  Debilidades                     |
+|         -                             |      -                           |
+| Manejo y gestión de tiempos           |Concentración en varias actividades|
+| Trabajo en equipo                     |                                  |
 </div>
 
 ## _Expectativas del equipo_
