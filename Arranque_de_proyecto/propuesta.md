@@ -39,6 +39,6 @@ Las cuales se desarrollarán a profundidad conforme se vayan conociendo las tare
 ---
 ## _Sobre los integrantes del equipo_ 
 
-Para saber mas sobre quienes integran el proyecto, puede leer "Sobre el equipo" aqui: [Sobre el equipo](https://ubicacionpropuesta)
+Para saber mas sobre quienes integran el proyecto, puede leer "Sobre el equipo" aqui: [Sobre el equipo](https://github.com/ivalani/Project-Multiagentes/blob/main/Arranque_de_proyecto/integrantes.md)
 
 ---
