@@ -114,4 +114,4 @@ Respecto al bloque:
 
 ## _Sobre el proyecto_
 
-Para saber mas sobre el proyecto, puede leerse la "propuesta formal inicial" aqui: [Propuesta formal](https://ubicacionpropuesta)
+Para saber mas sobre el proyecto, puede leerse la "propuesta formal inicial" aqui: [Propuesta formal](https://github.com/ivalani/Project-Multiagentes/blob/main/Arranque_de_proyecto/propuesta.md)
