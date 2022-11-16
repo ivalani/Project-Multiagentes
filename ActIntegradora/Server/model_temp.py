@@ -11,7 +11,7 @@ class RandomModel(Model):
         N: Number of agents in the simulation
         height, width: The size of the grid to model
     """
-    def __init__(self, N, BoxesN, width, height, maxSteps):
+    def __init__(self, N, BoxesN, width, height):
         self.num_agents = N
         self.num_boxes = BoxesN
         self.remaning_boxes = BoxesN
@@ -21,6 +21,21 @@ class RandomModel(Model):
 
         self.datacollector = DataCollector(
         agent_reporters={"Steps": lambda a: a.steps_taken if isinstance(a, RobotAgent) else 0})
+
+        # Places the Drop Zones at the corners of the grid
+        dropZonePos = [(-1,-1), (0,-1), (-1,0)]
+        for i in range(3):
+            drop = dropZone(i+3000, self)
+            pos = dropZonePos[i]
+            self.schedule.add(drop)
+            self.grid.place_agent(drop, pos)
+
+        # Add the robots to [1,1] in the grid
+        for i in range(self.num_agents):
+            a = RobotAgent(i+1000, self)
+            pos = 1,1
+            self.schedule.add(a)
+            self.grid.place_agent(a, pos)
 
         # Places the boxes in the grid
         for i in range(self.num_boxes):
@@ -32,13 +47,6 @@ class RandomModel(Model):
             while (not self.grid.is_cell_empty(pos)):
                 pos = pos_gen(self.grid.width, self.grid.height)
             self.grid.place_agent(boxy, pos)
-
-        # Add the agent to a random empty grid cell
-        for i in range(self.num_agents):
-            a = RobotAgent(i+1000, self)
-            pos = 1,1
-            self.schedule.add(a)
-            self.grid.place_agent(a, pos)
 
         self.datacollector.collect(self)
 
