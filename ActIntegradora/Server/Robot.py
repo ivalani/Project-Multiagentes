@@ -47,16 +47,17 @@ class RobotAgent(Agent):
 
         ## Movement based on boxes around the agent.
         # Checks which agents are in the surrounding cells.
-        agentsAround = self.model.grid.get_neighbors(self.pos, moore=False, include_center=False, radius=1)
+        agentsAround = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
 
         # List of boxes around the agent.
         boxesAround = [agent for agent in agentsAround if isinstance(agent, Box)]
+        # Detect if there agent is next to drop zone.
+        besideDropZone = [agent for agent in agentsAround if isinstance(agent, dropZone)]
 
         #
         # Save of the last seen box.
         if len(boxesAround) > 0 and self.with_box:
             self.last_box = boxesAround[0]
-            print("Last box: ", self.last_box.pos)
 
         # Gets position of the cells that have boxes in them.
         boxesPos = []
@@ -66,6 +67,7 @@ class RobotAgent(Agent):
         indexBox = 0
 
         # Selection of the next_move
+
         if self.with_box:
             boxesPos = []
             x,y = self.pos
@@ -80,6 +82,30 @@ class RobotAgent(Agent):
                 y += 1
             pos = (x,y)
             next_move = (pos)
+            if besideDropZone != []:
+                self.with_box = False
+                self.closest_dropZone = None
+
+        elif self.last_box != None:
+            x,y = self.pos
+            x2,y2 = self.last_box.pos
+            if x > x2:
+                x -= 1
+            elif y > y2:
+                y -= 1
+            elif x < x2:
+                x += 1
+            elif y < y2:
+                y += 1
+            pos = x,y
+            print(pos)
+            next_move = pos
+            if self.pos == self.last_box.pos:
+                self.with_box = True
+                self.last_box = None
+                self.cells_visited.append(self.pos)
+                i = boxesPos.index(next_move)
+                self.closest_dropZone = self.get_closest_dropZone(self,next_move)
 
         elif len(boxesPos) != 0:
             next_move = self.random.choice(boxesPos)
@@ -103,7 +129,7 @@ class RobotAgent(Agent):
                 self.model.remaning_boxes -= 1
 
     def step(self):
-        """
+        """www
         Determines the new direction it will take, and then moves
         """
         self.move()
