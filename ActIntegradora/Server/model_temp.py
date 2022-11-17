@@ -16,19 +16,23 @@ class RandomModel(Model):
         self.num_boxes = BoxesN
         self.remaning_boxes = BoxesN
         self.grid = MultiGrid(width,height,torus = False)
+        self.size = (width, height)
         self.schedule = RandomActivation(self)
         self.running = True
+        self.dropZones = []
 
         self.datacollector = DataCollector(
         agent_reporters={"Steps": lambda a: a.steps_taken if isinstance(a, RobotAgent) else 0})
 
+        # Now it has hardcoded the positions for the drop zones
         # Places the Drop Zones at the corners of the grid
-        dropZonePos = [(-1,-1), (0,-1), (-1,0)]
+        dropZonePos = [(self.size[0]-1,self.size[1]-1), (0,self.size[1]-1), (self.size[0]-1,0)]
         for i in range(3):
             drop = dropZone(i+3000, self)
             pos = dropZonePos[i]
             self.schedule.add(drop)
             self.grid.place_agent(drop, pos)
+            self.dropZones.append(pos)
 
         # Add the robots to [1,1] in the grid
         for i in range(self.num_agents):

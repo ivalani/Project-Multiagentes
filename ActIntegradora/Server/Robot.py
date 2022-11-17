@@ -1,4 +1,5 @@
 from mesa import Agent
+import math
 
 class RobotAgent(Agent):
     """
@@ -18,7 +19,7 @@ class RobotAgent(Agent):
         self.direction = 4
         self.steps_taken = 0
         self.cells_visited = []
-        self.closest_dropZone = []
+        self.closest_dropZone = None
         self.last_box = None
         self.with_box = False
 
@@ -53,8 +54,9 @@ class RobotAgent(Agent):
 
         #
         # Save of the last seen box.
-        if len(boxesAround) > 0:
+        if len(boxesAround) > 0 and self.with_box:
             self.last_box = boxesAround[0]
+            print("Last box: ", self.last_box.pos)
 
         # Gets position of the cells that have boxes in them.
         boxesPos = []
@@ -64,13 +66,28 @@ class RobotAgent(Agent):
         indexBox = 0
 
         # Selection of the next_move
-        if len(boxesPos) != 0:
+        if self.with_box:
+            boxesPos = []
+            x,y = self.pos
+            x2,y2 = self.closest_dropZone
+            if x > x2:
+                x -= 1
+            elif y > y2:
+                y -= 1
+            elif x < x2:
+                x += 1
+            elif y < y2:
+                y += 1
+            pos = (x,y)
+            next_move = (pos)
+
+        elif len(boxesPos) != 0:
             next_move = self.random.choice(boxesPos)
             # Save the next move as a visited cell.
             self.cells_visited.append(self.pos)
-
             i = boxesPos.index(next_move)
             self.with_box = True
+            self.closest_dropZone = self.get_closest_dropZone(self,next_move)
 
         else:
             next_move = self.random.choice(next_moves)
@@ -81,17 +98,34 @@ class RobotAgent(Agent):
         if self.random.random() < 100:
             self.model.grid.move_agent(self, next_move)
             self.steps_taken+=1
-            if trash:
-                self.model.grid.remove_agent(trashAround[i])
+            if self.with_box and boxesPos != []:
+                self.model.grid.remove_agent(boxesAround[i])
                 self.model.remaning_boxes -= 1
-
-                self.with_box = False
 
     def step(self):
         """
         Determines the new direction it will take, and then moves
         """
         self.move()
+
+    def get_closest_dropZone(self,x,y):
+        """
+        Returns the closest drop zone to the given position
+        """
+        position = y
+        closest = self.model.dropZones[0]
+        for i in range(1, len(self.model.dropZones)):
+            if self.distance_to(position, self.model.dropZones[i]) < self.distance_to(position, closest):
+                closest = self.model.dropZones[i]
+        return closest
+
+    def distance_to(self,posA,posB):
+        """
+        Returns the distance between two points.
+        """
+        x1, y1 = posA
+        x2, y2 = posB
+        return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
 
 class Box(Agent):
     """
