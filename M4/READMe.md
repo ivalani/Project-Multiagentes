@@ -1,0 +1,18 @@
+# Tarea M4 
+
+## Propósito 
+Implementar los elementos de modelación, texturizado e iluminación requeridos para la solución del reto.
+
+## Instrucciones 
+Presenta, en los equipos para el proyecto final, un proyecto de Unity, en un repositorio GitHub. Que incluya:
+
+* Una escena llamada Graphics, dentro del folder Scenes, y donde se muestren los siguientes elementos
+* 4 modelos de automóvil diferentes, con materiales, en la carpeta Models.
+* Ejemplos de texturas dentro de la carpeta Texures.
+* Al menos dos fuentes puntuales de iluminación en la escena.
+* El modelo del cruce (la calle) para automóviles en la escena.
+
+---
+### _Observaciones:_
+* Todos los modelos tienen una escala consistente (los carros caben dentro de las calles y son de aproximadamente el mismo tamaño)
+* Los carros deben estar correctamente orientados para moverse hacia adelante (el frente del carro apunta en la dirección +Z )
