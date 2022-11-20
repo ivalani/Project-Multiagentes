@@ -85,9 +85,11 @@ class RobotAgent(Agent):
             if besideDropZone != []:
                 self.with_box = False
                 self.closest_dropZone = None
+                self.model.remaning_boxes -= 1
 
         elif self.last_box != None:
             x,y = self.pos
+            print(self.last_box.pos)
             x2,y2 = self.last_box.pos
             if x > x2:
                 x -= 1
@@ -98,7 +100,6 @@ class RobotAgent(Agent):
             elif y < y2:
                 y += 1
             pos = x,y
-            print(pos)
             next_move = pos
             if self.pos == self.last_box.pos:
                 self.with_box = True
@@ -126,7 +127,7 @@ class RobotAgent(Agent):
             self.steps_taken+=1
             if self.with_box and boxesPos != []:
                 self.model.grid.remove_agent(boxesAround[i])
-                self.model.remaning_boxes -= 1
+
 
     def step(self):
         """www
@@ -166,6 +167,16 @@ class Box(Agent):
 class dropZone(Agent):
     """
     Drop zone agent. Just to add a drop zone to the grid.
+    """
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+
+    def step(self):
+        pass
+
+class ObstacleAgent(Agent):
+    """
+    Obstacle agent. Just to add obstacles to the grid.
     """
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
