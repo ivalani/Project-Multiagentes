@@ -208,11 +208,6 @@ public class AgentController : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
-    
-=======
-<<<<<<< HEAD
->>>>>>> 908cf58bd58ee84b5bea1ca1c6c385519ca08c7a
     IEnumerator GetBoxesData()
     {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getBoxesEndpoint);
@@ -233,21 +228,4 @@ public class AgentController : MonoBehaviour
             } 
         }
     }
-=======
-    // IEnumerator GetBoxData()
-    // {
-    //     UnityWebRequest www = UnityWebRequest.Get(serverUrl + getBoxes);
-    //     yield return www.SendWebRequest();
-
-    //     if (www.result != UnityWebRequest.Result.Success)
-    //         Debug.Log(www.error);
-    //     else
-    //     {
-    //         boxData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
-    //         // Debug.Log(boxData.positions);
-
-    //         // forechar
-    //     }
-    // }
->>>>>>> 24332f17 (Obstacles added)
 }
