@@ -3,10 +3,14 @@ import math
 
 class RobotAgent(Agent):
     """
-    Roomba Agent that moves randomly.
+    Robot Agent that moves randomly in search of boxes and delivers them to DropZones.
     Attributes:
         unique_id: Agent's ID
-        direction: Randomly chosen direction chosen from one of eight directions
+        steps_taken: Number of steps taken by the agent
+        cells_visited: List of cells visited by the agent
+        closest_dropZone: Coordinata of closest drop zone to the agent
+        last_box: Coordinata of last box found by the agent when delivering another to a drop zone
+        with_box: Boolean that indicates if the agent is carrying a box
     """
     def __init__(self, unique_id, model):
         """
@@ -25,10 +29,10 @@ class RobotAgent(Agent):
 
     def move(self):
         """
-        Determines if the agent can move in the direction that was chosen
+        Determines movement of the agent.
         """
-        ## Basic movement around 4 directions. Counts visited cells.
-        # All possible steps within one unit of the current position.
+        ############ LISTS OF OPTIONS FOR MOVEMENT ############
+        # All possible steps within one cell of the current position.
         all_steps = self.model.grid.get_neighborhood(self.pos, moore=False, include_center=True)
 
         # Checks which grid cells are empty and saves them in a list of possible steps.
@@ -40,33 +44,27 @@ class RobotAgent(Agent):
         if not all_visited:
             next_moves = [p for p in next_moves if p not in self.cells_visited]
 
-        #
         # In case all cell around are being occupied by other agents, the agent will stay at the same position.
         if next_moves == []:
             next_moves = [self.pos]
 
-        ## Movement based on boxes around the agent.
-        # Checks which agents are in the surrounding cells.
+        # List of all agents in the surrounding cells.
         agentsAround = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
 
         # List of boxes around the agent.
         boxesAround = [agent for agent in agentsAround if isinstance(agent, Box)]
-        # Detect if there agent is next to drop zone.
-        besideDropZone = [agent for agent in agentsAround if isinstance(agent, dropZone)]
-
-        #
-        # Save of the last seen box.
-        if len(boxesAround) > 0 and self.with_box:
-            self.last_box = boxesAround[0]
 
         # Gets position of the cells that have boxes in them.
         boxesPos = []
         for i in range(len(boxesAround)):
             boxesPos.append(boxesAround[i].pos)
 
-        indexBox = 0
+        # Saves the coords of the last seen box when delivering a box.
+        if len(boxesAround) > 0 and self.with_box:
+            self.last_box = boxesAround[0]
 
-        # Selection of the next_move, by jerarquical order.
+        ############# MOVEMENT #############
+        # Selection of the next_move, by jerarquical order of conditions and using the previus lists.
 
         # 1:
         # The agent has a box and has a position for a Dropzone to deliver.
@@ -150,7 +148,7 @@ class RobotAgent(Agent):
 
     def step(self):
         """
-        Determines the new direction it will take, and then moves
+        Moves the agent by steps.
         """
         self.move()
 
@@ -159,9 +157,12 @@ class RobotAgent(Agent):
         Returns the closest drop zone to the given position
         """
         position = y
+        # Gets first dropZone coord.
         closest = self.model.dropZones[0]
+        # Compares distances between the given position and the dropZones.
         for i in range(1, len(self.model.dropZones)):
             if self.distance_to(position, self.model.dropZones[i]) < self.distance_to(position, closest):
+                # Coord of the dropZone with the smaller euler value is saved.
                 closest = self.model.dropZones[i]
         return closest
 
@@ -175,9 +176,17 @@ class RobotAgent(Agent):
 
 class Box(Agent):
     """
-    Trash agent. Just to add dirty cells to the grid.
+    Box agent.
+    Attributes:
+        unique_id: Agent's ID
     """
     def __init__(self, unique_id, model):
+        """
+        Creates a new box agent.
+        Args:
+            unique_id: The agent's ID
+            model: Model reference for the agent
+        """
         super().__init__(unique_id, model)
 
     def step(self):
@@ -185,9 +194,19 @@ class Box(Agent):
 
 class dropZone(Agent):
     """
-    Drop zone agent. Just to add a drop zone to the grid.
+    DropZone agent "stores" boxes, has a limit of 5. Also functions as pivot for change in behacior of robot agent.
+    Attributes:
+        unique_id: Agent's ID
+        stacked_boxes: Number of boxes stacked in the dropZone
+        condition: Based on N of boxes in the dropZone. N < 5: "Empty" Orange, N = 5: "Full" Green
     """
     def __init__(self, unique_id, model):
+        """
+        Creates a new dropZone agent.
+        Args:
+            unique_id: The agent's ID
+            model: Model reference for the agent
+        """
         super().__init__(unique_id, model)
         self.stacked_boxes = 0
         self.condition = "Empty"
@@ -223,9 +242,17 @@ class dropZone(Agent):
 
 class ObstacleAgent(Agent):
     """
-    Obstacle agent. Just to add obstacles to the grid.
+    Obstacle agent
+    Attributes:
+        unique_id: Agent's ID
     """
     def __init__(self, unique_id, model):
+        """
+        Creates a new Obstacle agent.
+        Args:
+            unique_id: The agent's ID
+            model: Model reference for the agent
+        """
         super().__init__(unique_id, model)
 
     def step(self):
