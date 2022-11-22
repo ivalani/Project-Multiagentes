@@ -32,7 +32,7 @@ def initModel():
             randomModel = RandomModel(numberAgents, boxesDensity, width, height)
             return jsonify({"message": "Parameters received. Model initiated"})
         except:
-            return jsonify({"message": "500"})
+            return jsonify({"message": "Error al iniciar el modelo"})
 
 
 @app.route("/getRobots", methods=["GET"])
