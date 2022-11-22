@@ -39,7 +39,7 @@ def agent_portrayal(agent):
     return portrayal
 
 model_params = {"N":UserSettableParameter("slider", "Robots", 5, 5, 10, 1),
-                "BoxesDensity":UserSettableParameter("slider", "Boxes", .5, .25, 1, .05),
+                "BoxesDensity":UserSettableParameter("slider", "Boxes", .05, .01, .05, .0025),
                 "width":UserSettableParameter("slider", "Width", 20, 10, 50, 2),
                 "height":UserSettableParameter("slider", "Height", 20, 10, 50, 2)}
 
