@@ -58,7 +58,6 @@ class RobotAgent(Agent):
         # Save of the last seen box.
         if len(boxesAround) > 0 and self.with_box:
             self.last_box = boxesAround[0]
-            print("Last box: ", self.last_box.pos)
 
         # Gets position of the cells that have boxes in them.
         boxesPos = []
@@ -69,7 +68,7 @@ class RobotAgent(Agent):
 
         # Selection of the next_move
 
-        if self.with_box:
+        if self.with_box and self.closest_dropZone != None:
             boxesPos = []
             x,y = self.pos
             x2,y2 = self.closest_dropZone
@@ -81,16 +80,13 @@ class RobotAgent(Agent):
                 x += 1
             elif y < y2:
                 y += 1
+            else:
+                x,y = self.closest_dropZone
             pos = (x,y)
             next_move = (pos)
-            if besideDropZone != []:
-                self.with_box = False
-                self.closest_dropZone = None
-                self.model.remaning_boxes -= 1
 
         elif self.last_box != None and self.last_box.pos:
             x,y = self.pos
-            print(self.last_box.pos)
             x2,y2 = self.last_box.pos
             if x > x2:
                 x -= 1
@@ -103,10 +99,11 @@ class RobotAgent(Agent):
             pos = x,y
             next_move = pos
             if self.pos == self.last_box.pos:
-                self.with_box = True
+                if next_move in boxesPos:
+                    self.with_box = True
+                    i = boxesPos.index(next_move)
+                    self.closest_dropZone = self.get_closest_dropZone(self,next_move)
                 self.cells_visited.append(self.pos)
-                i = boxesPos.index(next_move)
-                self.closest_dropZone = self.get_closest_dropZone(self,next_move)
 
         elif len(boxesPos) != 0:
             next_move = self.random.choice(boxesPos)
@@ -125,7 +122,6 @@ class RobotAgent(Agent):
         if self.random.random() < 100:
             self.model.grid.move_agent(self, next_move)
             if self.pos == self.last_box:
-                print("borro posicion")
                 self.last_box = None
             self.steps_taken+=1
             if self.with_box and boxesPos != []:
@@ -133,7 +129,7 @@ class RobotAgent(Agent):
 
 
     def step(self):
-        """www
+        """
         Determines the new direction it will take, and then moves
         """
         self.move()
@@ -173,9 +169,30 @@ class dropZone(Agent):
     """
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
+        self.stacked_boxes = 0
+
+    def dropBay(self):
+        """
+        Drops a box in the drop zone.
+        """
+        agentsAround = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
+        RobotAround = [agent for agent in agentsAround if isinstance(agent, RobotAgent)]
+        print(RobotAround)
+        for rob in RobotAround:
+            if  rob.pos == self.pos and rob.with_box:
+                rob.with_box = False
+                self.stacked_boxes += 1
+                rob.closest_dropZone = None
+                self.model.remaning_boxes -= 1
+                print("stacked boxes: ", self.stacked_boxes, "in drop zone: ", self.unique_id)
+        if self.stacked_boxes == 5:
+            self.model.dropZones.remove(self.pos)
 
     def step(self):
-        pass
+        if self.stacked_boxes == 5:
+            pass
+        else:
+            self.dropBay()
 
 class ObstacleAgent(Agent):
     """
