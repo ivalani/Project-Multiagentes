@@ -32,7 +32,7 @@ def initModel():
 
             return jsonify({"message": "Parameters received. Model initiated"})
         except:
-            return jsonify({"message": "mamó"})
+            return jsonify({"message": "500"})
 @app.route('/getRobots', methods = ['GET'])
 def getRobots():
     global randomModel
