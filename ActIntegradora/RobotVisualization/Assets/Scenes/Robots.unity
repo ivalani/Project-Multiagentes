@@ -159,7 +159,7 @@ MonoBehaviour:
   NAgents: 10
   width: 20
   height: 20
-  boxDensity: 1
+  boxDensity: 10
   timeToUpdate: 3
 --- !u!4 &386103406
 Transform:

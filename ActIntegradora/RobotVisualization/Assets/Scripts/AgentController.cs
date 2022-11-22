@@ -45,7 +45,7 @@ public class AgentController : MonoBehaviour
     AgentsData agentsData, obstacleData, boxesData;
     Dictionary<string, GameObject> agents;
     Dictionary<string, Vector3> prevPositions, currPositions;
-    Dictionary<int, GameObject> boxes;
+    Dictionary<string, GameObject> boxes;
 
     bool updated = false, started = false;
 
@@ -64,7 +64,7 @@ public class AgentController : MonoBehaviour
         currPositions = new Dictionary<string, Vector3>();
 
         agents = new Dictionary<string, GameObject>();
-        boxes = new Dictionary<int, GameObject>();
+        boxes = new Dictionary<string, GameObject>();
 
         floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
         floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
@@ -83,8 +83,8 @@ public class AgentController : MonoBehaviour
 
     private void Update() 
     {   
-        //Debug.Log(timer);
-        //Debug.Log(updated);
+        Debug.Log(timer);
+        Debug.Log(updated);
         if(timer < 0)
         {
             timer = timeToUpdate;
@@ -152,6 +152,7 @@ public class AgentController : MonoBehaviour
             Debug.Log("Getting Agents positions");
             StartCoroutine(GetAgentsData());
             StartCoroutine(GetObstacleData());
+            StartCoroutine(GetBoxesData());
         }
     }
 
@@ -211,6 +212,7 @@ public class AgentController : MonoBehaviour
         }
     }
 
+    
     IEnumerator GetBoxesData()
     {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getBoxesEndpoint);
