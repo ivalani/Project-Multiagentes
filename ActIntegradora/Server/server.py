@@ -6,6 +6,8 @@ from mesa.visualization.UserParam import UserSettableParameter
 
 width = UserSettableParameter('slider', 'Width', 20, 10, 30, 1)
 
+COLORS = {"Full": "#00AA00", "Empty": "#F37417"}
+
 def agent_portrayal(agent):
     if agent is None: return
 
@@ -16,7 +18,7 @@ def agent_portrayal(agent):
                  "r": .8}
 
     if (isinstance(agent, dropZone)):
-        portrayal["Color"] = "orange"
+        portrayal["Color"] = COLORS[agent.condition]
         portrayal["Layer"] = 0
         portrayal["Shape"] = "rect"
         portrayal["w"] = 1
@@ -39,7 +41,7 @@ def agent_portrayal(agent):
     return portrayal
 
 model_params = {"N":UserSettableParameter("slider", "Robots", 5, 5, 10, 1),
-                "BoxesDensity":UserSettableParameter("slider", "Boxes", .5, .25, 1, .05),
+                "BoxesDensity":UserSettableParameter("slider", "Boxes", .05, .01, .05, .0025),
                 "width":UserSettableParameter("slider", "Width", 20, 10, 50, 2),
                 "height":UserSettableParameter("slider", "Height", 20, 10, 50, 2)}
 
