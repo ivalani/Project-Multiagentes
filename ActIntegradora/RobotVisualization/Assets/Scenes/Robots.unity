@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571336, b: 0.3069219, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -155,9 +155,11 @@ MonoBehaviour:
   agentPrefab: {fileID: 5924147488500154945, guid: b68b6351759b928489a25bf187a378e6, type: 3}
   obstaclePrefab: {fileID: 8517897001039776426, guid: 310c5a6d4414eb14388336d05beeba7b, type: 3}
   floor: {fileID: 1317850861}
-  NAgents: 2
+  box: {fileID: 2851873960711616821, guid: f410020a0b7d16247802df5ca0a418d3, type: 3}
+  NAgents: 10
   width: 20
   height: 20
+  boxDensity: 1
   timeToUpdate: 3
 --- !u!4 &386103406
 Transform:

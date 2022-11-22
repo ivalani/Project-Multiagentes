@@ -39,16 +39,19 @@ public class AgentController : MonoBehaviour
     string serverUrl = "http://localhost:8000";
     string getAgentsEndpoint = "/getRobots";
     string getObstaclesEndpoint = "/getWall";
+    string getBoxes = "/getBoxes";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
     AgentsData agentsData, obstacleData;
     Dictionary<string, GameObject> agents;
     Dictionary<string, Vector3> prevPositions, currPositions;
+    Dictionary<int, GameObject> boxes;
 
     bool updated = false, started = false;
 
     public GameObject agentPrefab, obstaclePrefab, floor;
-    public int NAgents, width, height;
+    public GameObject box;
+    public int NAgents, width, height, boxDensity;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
 
@@ -61,17 +64,25 @@ public class AgentController : MonoBehaviour
         currPositions = new Dictionary<string, Vector3>();
 
         agents = new Dictionary<string, GameObject>();
+        boxes = new Dictionary<int, GameObject>();
 
         floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
         floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
         
         timer = timeToUpdate;
 
+        for (int i = 0; i < NAgents; i++)
+        {
+            boxes[i] = Instantiate(box, Vector3.zero, Quaternion.identity);
+        }
+
         StartCoroutine(SendConfiguration());
     }
 
     private void Update() 
-    {
+    {   
+        //Debug.Log(timer);
+        //Debug.Log(updated);
         if(timer < 0)
         {
             timer = timeToUpdate;
@@ -118,10 +129,10 @@ public class AgentController : MonoBehaviour
     {
         WWWForm form = new WWWForm();
 
-        form.AddField("NAgents", NAgents.ToString());
-        form.AddField("BoxesDensity", 5.ToString());
-        form.AddField("width", width.ToString());
-        form.AddField("height", height.ToString());
+        form.AddField("NumberAgents", NAgents.ToString());
+        form.AddField("BoxesDensity", boxDensity.ToString());
+        form.AddField("CanvasWidth", width.ToString());
+        form.AddField("CanvasHeight", height.ToString());
         
 
         UnityWebRequest www = UnityWebRequest.Post(serverUrl + sendConfigEndpoint, form);
@@ -144,13 +155,15 @@ public class AgentController : MonoBehaviour
 
     IEnumerator GetAgentsData() 
     {
+        Debug.Log("get agents data");
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getAgentsEndpoint);
         yield return www.SendWebRequest();
- 
+        Debug.Log(www.downloadHandler.text);
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
         else 
         {
+            Debug.Log("getting users data");
             agentsData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
 
             foreach(AgentData agent in agentsData.positions)
