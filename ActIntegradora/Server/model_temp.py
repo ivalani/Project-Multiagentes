@@ -53,11 +53,15 @@ class RandomModel(Model):
             self.grid.place_agent(drop, pos)
             self.dropZones.append(pos) """
 
-        # Add the robots to [1,1] in the grid
+        # Add the robots to random cords in the grid
         for i in range(self.num_agents):
             a = RobotAgent(i+1000, self)
-            pos = 2,2
             self.schedule.add(a)
+
+            pos_gen = lambda w, h: (self.random.randrange(w), self.random.randrange(h))
+            pos = pos_gen(self.grid.width, self.grid.height)
+            while (not self.grid.is_cell_empty(pos)):
+                pos = pos_gen(self.grid.width, self.grid.height)
             self.grid.place_agent(a, pos)
 
         # Places the boxes in the grid
