@@ -39,10 +39,10 @@ public class AgentController : MonoBehaviour
     string serverUrl = "http://localhost:8000";
     string getAgentsEndpoint = "/getRobots";
     string getObstaclesEndpoint = "/getWall";
-    string getBoxes = "/getBoxes";
+    string getBoxesEndpoint = "/getBoxes";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentsData agentsData, obstacleData;
+    AgentsData agentsData, obstacleData, boxesData;
     Dictionary<string, GameObject> agents;
     Dictionary<string, Vector3> prevPositions, currPositions;
     Dictionary<int, GameObject> boxes;
@@ -71,10 +71,12 @@ public class AgentController : MonoBehaviour
         
         timer = timeToUpdate;
 
+        /*
         for (int i = 0; i < NAgents; i++)
         {
             boxes[i] = Instantiate(box, Vector3.zero, Quaternion.identity);
         }
+        */
 
         StartCoroutine(SendConfiguration());
     }
@@ -206,6 +208,27 @@ public class AgentController : MonoBehaviour
             {
                 Instantiate(obstaclePrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
             }
+        }
+    }
+
+    IEnumerator GetBoxesData()
+    {
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getBoxesEndpoint);
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            boxesData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
+
+            Debug.Log(boxesData.positions);
+            foreach(AgentData boxes in boxesData.positions)
+            {
+                Instantiate(box, new Vector3(boxes.x, boxes.y, boxes.z), Quaternion.identity);
+            } 
         }
     }
 }
