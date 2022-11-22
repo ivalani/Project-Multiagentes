@@ -66,38 +66,50 @@ class RobotAgent(Agent):
 
         indexBox = 0
 
-        # Selection of the next_move
+        # Selection of the next_move, by jerarquical order.
 
+        # 1:
+        # The agent has a box and has a position for a Dropzone to deliver.
+        # Delivers the box to the closest dropZone.
         if self.with_box and self.closest_dropZone != None:
             boxesPos = []
             x,y = self.pos
             x2,y2 = self.closest_dropZone
+            # Movement when dropZone position is lesser than self position.
             if x > x2:
                 x -= 1
             elif y > y2:
                 y -= 1
+            # Movement when dropZone position is greater than self position.
             elif x < x2:
                 x += 1
             elif y < y2:
                 y += 1
+            # Stays 1 step in dropZone when destination reached.
             else:
                 x,y = self.closest_dropZone
             pos = (x,y)
             next_move = (pos)
 
+        # 2:
+        # The agent has a cooridnate for a last box seen.
+        # Moves to the last box seen when it was moving to deliver another box.
         elif self.last_box != None and self.last_box.pos:
             x,y = self.pos
             x2,y2 = self.last_box.pos
+            # Movement when last_box position is lesser than self position.
             if x > x2:
                 x -= 1
             elif y > y2:
                 y -= 1
+            # Movement when last_box position is greater than self position.
             elif x < x2:
                 x += 1
             elif y < y2:
                 y += 1
             pos = x,y
             next_move = pos
+            # Redundancy.
             if self.pos == self.last_box.pos:
                 if next_move in boxesPos:
                     self.with_box = True
@@ -105,6 +117,9 @@ class RobotAgent(Agent):
                     self.closest_dropZone = self.get_closest_dropZone(self,next_move)
                 self.cells_visited.append(self.pos)
 
+        # 3:
+        # The agent moves to pickup a box if it is next to one.
+        # If more than one box is next to the agent, it will pick a random one.
         elif len(boxesPos) != 0:
             next_move = self.random.choice(boxesPos)
             # Save the next move as a visited cell.
@@ -113,6 +128,11 @@ class RobotAgent(Agent):
             self.with_box = True
             self.closest_dropZone = self.get_closest_dropZone(self,next_move)
 
+        # 4:
+        # The agent moves to a random cell.
+        # The condition is to move to a cell that is free.
+        # Priority is given to cells that have not been visited.
+        # If all cells around are occupied, the agent will stay at the same position.
         else:
             next_move = self.random.choice(next_moves)
             # Save the next move as a visited cell.
