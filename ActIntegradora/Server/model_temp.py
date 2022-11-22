@@ -13,7 +13,12 @@ class RandomModel(Model):
     """
     def __init__(self, N, BoxesDensity, width, height):
         self.num_agents = N
-        self.num_boxes = int(BoxesDensity * width * height) - 4 - height * 2 - width * 2
+        borderSize = height * 2 + width * 2
+        boxTotal = int(BoxesDensity * width * height)
+        if boxTotal > borderSize:
+            self.num_boxes = boxTotal - borderSize
+        else:
+            self.num_boxes = boxTotal
         self.remaning_boxes = self.num_boxes
         self.grid = MultiGrid(width,height,torus = False)
         self.size = (width, height)
@@ -66,7 +71,7 @@ class RandomModel(Model):
         '''Advance the model by one step.'''
         self.schedule.step()
         self.datacollector.collect(self)
-
+        print("Remaining boxes: ", self.remaning_boxes)
         # Determines if the model should continue running
-        if self.remaning_boxes == 0:
+        if self.remaning_boxes <= 0:
             self.running = False
