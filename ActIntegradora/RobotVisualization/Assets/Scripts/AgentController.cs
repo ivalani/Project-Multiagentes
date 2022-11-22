@@ -157,7 +157,6 @@ public class AgentController : MonoBehaviour
 
     IEnumerator GetAgentsData() 
     {
-        Debug.Log("get agents data");
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getAgentsEndpoint);
         yield return www.SendWebRequest();
         Debug.Log(www.downloadHandler.text);
@@ -165,7 +164,6 @@ public class AgentController : MonoBehaviour
             Debug.Log(www.error);
         else 
         {
-            Debug.Log("getting users data");
             agentsData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
 
             foreach(AgentData agent in agentsData.positions)
@@ -202,8 +200,6 @@ public class AgentController : MonoBehaviour
         {
             obstacleData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
 
-            Debug.Log(obstacleData.positions);
-
             foreach(AgentData obstacle in obstacleData.positions)
             {
                 Instantiate(obstaclePrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
@@ -211,6 +207,7 @@ public class AgentController : MonoBehaviour
         }
     }
 
+<<<<<<< HEAD
     IEnumerator GetBoxesData()
     {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getBoxesEndpoint);
@@ -231,4 +228,21 @@ public class AgentController : MonoBehaviour
             } 
         }
     }
+=======
+    // IEnumerator GetBoxData()
+    // {
+    //     UnityWebRequest www = UnityWebRequest.Get(serverUrl + getBoxes);
+    //     yield return www.SendWebRequest();
+
+    //     if (www.result != UnityWebRequest.Result.Success)
+    //         Debug.Log(www.error);
+    //     else
+    //     {
+    //         boxData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+    //         // Debug.Log(boxData.positions);
+
+    //         // forechar
+    //     }
+    // }
+>>>>>>> 24332f17 (Obstacles added)
 }
