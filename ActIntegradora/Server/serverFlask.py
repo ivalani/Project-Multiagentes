@@ -69,7 +69,7 @@ def getBoxes():
 
         for(contents, x, z) in randomModel.grid.coord_iter():
             for i in contents:
-                if isinstance(i, ObstacleAgent):
+                if isinstance(i, Box):
                     boxPosition.append({"id": str(i.unique_id), "x": x, "y":1, "z":z})
 
         return jsonify({"positions": boxPosition})
