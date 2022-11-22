@@ -29,7 +29,6 @@ class RandomModel(Model):
         # Creates the border of the grid
         border = [(x,y) for y in range(height) for x in range(width) if y in [0, height-1] or x in [0, width - 1]]
         dropZoneBorder = [(x,y) for y in range(height-1) for x in range(width-1) if y in [1, height-2] or x in [1, width - 2]]
-        print(self.dropZonesCalc)
         for pos in border:
             obs = ObstacleAgent(pos, self)
             # self.schedule.add(obs)
