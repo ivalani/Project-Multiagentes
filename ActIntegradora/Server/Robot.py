@@ -173,6 +173,8 @@ class RobotAgent(Agent):
         x2, y2 = posB
         return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
 
+    
+
 class Box(Agent):
     """
     Trash agent. Just to add dirty cells to the grid.
@@ -191,28 +193,33 @@ class dropZone(Agent):
         super().__init__(unique_id, model)
         self.stacked_boxes = 0
 
-    def dropBay(self):
+    def OpenBay(self):
         """
         Drops a box in the drop zone.
         """
         agentsAround = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
         RobotAround = [agent for agent in agentsAround if isinstance(agent, RobotAgent)]
-        print(RobotAround)
         for rob in RobotAround:
             if  rob.pos == self.pos and rob.with_box:
                 rob.with_box = False
                 self.stacked_boxes += 1
                 rob.closest_dropZone = None
                 self.model.remaning_boxes -= 1
-                print("stacked boxes: ", self.stacked_boxes, "in drop zone: ", self.unique_id)
         if self.stacked_boxes == 5:
             self.model.dropZones.remove(self.pos)
 
+    def ClosedBay(self):
+        agentsAround = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
+        RobotAround = [agent for agent in agentsAround if isinstance(agent, RobotAgent)]
+        for rob in RobotAround:
+            if  rob.pos == self.pos and rob.with_box:
+                rob.closest_dropZone = None
+
     def step(self):
         if self.stacked_boxes == 5:
-            pass
+            self.ClosedBay()
         else:
-            self.dropBay()
+            self.OpenBay()
 
 class ObstacleAgent(Agent):
     """
