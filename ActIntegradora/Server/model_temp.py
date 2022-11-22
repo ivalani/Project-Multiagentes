@@ -43,15 +43,8 @@ class RandomModel(Model):
             drop = dropZone(i+5000, self)
             self.dropZones.append(pos)
             self.schedule.add(drop)
+            drop.condition = "Empty"
             self.grid.place_agent(drop, pos)
-        """
-        dropZonePos = [(self.size[0]-2,self.size[1]-2), (1,self.size[1]-2), (self.size[0]-2,1)]
-        for i in range(3):
-            drop = dropZone(i+5000, self)
-            pos = dropZonePos[i]
-            self.schedule.add(drop)
-            self.grid.place_agent(drop, pos)
-            self.dropZones.append(pos) """
 
         # Add the robots to random cords in the grid
         for i in range(self.num_agents):
