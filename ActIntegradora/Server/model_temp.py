@@ -13,7 +13,7 @@ class RandomModel(Model):
     """
     def __init__(self, N, BoxesDensity, width, height):
         self.num_agents = N
-        self.num_boxes = int(BoxesDensity * width * height) - self.num_agents - 3 - height * 2 - width * 2
+        self.num_boxes = int(BoxesDensity * width * height) - 4 - height * 2 - width * 2
         self.remaning_boxes = self.num_boxes
         self.grid = MultiGrid(width,height,torus = False)
         self.size = (width, height)

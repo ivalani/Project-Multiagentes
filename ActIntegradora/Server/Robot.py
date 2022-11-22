@@ -58,6 +58,7 @@ class RobotAgent(Agent):
         # Save of the last seen box.
         if len(boxesAround) > 0 and self.with_box:
             self.last_box = boxesAround[0]
+            print("Last box: ", self.last_box.pos)
 
         # Gets position of the cells that have boxes in them.
         boxesPos = []
@@ -87,7 +88,7 @@ class RobotAgent(Agent):
                 self.closest_dropZone = None
                 self.model.remaning_boxes -= 1
 
-        elif self.last_box != None:
+        elif self.last_box != None and self.last_box.pos:
             x,y = self.pos
             print(self.last_box.pos)
             x2,y2 = self.last_box.pos
@@ -103,7 +104,6 @@ class RobotAgent(Agent):
             next_move = pos
             if self.pos == self.last_box.pos:
                 self.with_box = True
-                self.last_box = None
                 self.cells_visited.append(self.pos)
                 i = boxesPos.index(next_move)
                 self.closest_dropZone = self.get_closest_dropZone(self,next_move)
@@ -124,6 +124,9 @@ class RobotAgent(Agent):
         # Now move:
         if self.random.random() < 100:
             self.model.grid.move_agent(self, next_move)
+            if self.pos == self.last_box:
+                print("borro posicion")
+                self.last_box = None
             self.steps_taken+=1
             if self.with_box and boxesPos != []:
                 self.model.grid.remove_agent(boxesAround[i])
