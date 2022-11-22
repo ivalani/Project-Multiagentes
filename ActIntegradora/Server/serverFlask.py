@@ -80,7 +80,20 @@ def getBoxes():
 
         return jsonify({"positions": boxPosition})
 
+@app.route("/getDropZone", methods = ["GET"])
+def getDropZone():
+    global randomModel
+    dropZonePosition = []
 
+    if request.method == 'GET':
+
+        for (contents, x, z) in randomModel.grid.coord_iter():
+            for i in contents:
+                if isinstance(i, dropZone):
+                    dropZonePosition.append({"id": str(i.unique_ud), "x":x, "y": 1, "z":z})
+        
+        return jsonify({"positions": dropZonePosition})
+        
 @app.route("/update", methods=["GET"])
 def updateModel():
 
