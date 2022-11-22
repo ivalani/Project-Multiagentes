@@ -29,7 +29,7 @@ def initModel():
             currentStep = 0
 
             randomModel = RandomModel(numberAgents, boxesDensity, width, height)
-
+            print(randomModel)
             return jsonify({"message": "Parameters received. Model initiated"})
         except:
             return jsonify({"message": "500"})
