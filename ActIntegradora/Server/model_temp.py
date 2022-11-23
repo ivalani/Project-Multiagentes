@@ -21,7 +21,7 @@ class RandomModel(Model):
         Args:
             N: Number of agents in the simulation
             height, width: The size of the grid to model
-            BoxesDensity: The density of boxes in the grid
+            BoxesDensity: The density of boxes in the grid must be between 0.01 and .05
         """
         # Variables for agents
         self.num_agents = N
