@@ -90,7 +90,7 @@ def getDropZone():
         for (contents, x, z) in randomModel.grid.coord_iter():
             for i in contents:
                 if isinstance(i, dropZone):
-                    dropZonePosition.append({"id": str(i.unique_ud), "x":x, "y": 1, "z":z, "numberBoxes": i.stacked_boxes})
+                    dropZonePosition.append({"id": str(i.unique_id), "x":x, "y": 1, "z":z, "numberBoxes": i.stacked_boxes})
         
         return jsonify({"positions": dropZonePosition})
         

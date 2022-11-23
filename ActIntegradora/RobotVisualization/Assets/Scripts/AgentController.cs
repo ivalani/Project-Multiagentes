@@ -40,18 +40,21 @@ public class AgentController : MonoBehaviour
     string getAgentsEndpoint = "/getRobots";
     string getObstaclesEndpoint = "/getWall";
     string getBoxesEndpoint = "/getBoxes";
+    string getDropZoneEndpoint = "/getDropZone";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentsData agentsData, obstacleData, boxesData;
+    AgentsData agentsData, obstacleData, boxesData, dropZoneData;
     Dictionary<string, GameObject> agents;
     Dictionary<string, Vector3> prevPositions, currPositions;
     Dictionary<string, GameObject> boxes;
+    Dictionary<string, GameObject> dropZones;
 
     bool updated = false, started = false;
 
     public GameObject agentPrefab, obstaclePrefab, floor;
-    public GameObject box;
-    public int NAgents, width, height, boxDensity;
+    public GameObject box, dropZone;
+    public int NAgents, width, height;
+    public float boxDensity;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
 
@@ -124,6 +127,8 @@ public class AgentController : MonoBehaviour
         else 
         {
             StartCoroutine(GetAgentsData());
+            StartCoroutine(GetBoxesData());
+            StartCoroutine(GetDropZoneData());
         }
     }
 
@@ -153,6 +158,9 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetAgentsData());
             StartCoroutine(GetObstacleData());
             StartCoroutine(GetBoxesData());
+            StartCoroutine(GetDropZoneData());
+
+
         }
     }
 
@@ -226,6 +234,28 @@ public class AgentController : MonoBehaviour
             {
                 Instantiate(box, new Vector3(boxes.x, boxes.y, boxes.z), Quaternion.identity);
             } 
+        }
+    }
+
+    IEnumerator GetDropZoneData()
+    {
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getDropZoneEndpoint);
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            dropZoneData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
+
+            Debug.Log(dropZoneData.positions);
+
+            foreach(AgentData dropZones in dropZoneData.positions)
+            {
+                Instantiate(dropZone, new Vector3(dropZones.x, dropZones.y, dropZones.z), Quaternion.identity);
+            }   
         }
     }
 }
