@@ -26,7 +26,7 @@ def initModel():
             numberAgents = int(request.form.get("NumberAgents"))
             width = int(request.form.get("CanvasWidth"))
             height = int(request.form.get("CanvasHeight"))
-            boxesDensity = int(request.form.get("BoxesDensity"))
+            boxesDensity = float(request.form.get("BoxesDensity"))
             currentStep = 0
 
             randomModel = RandomModel(numberAgents, boxesDensity, width, height)
