@@ -7,6 +7,8 @@
     "v" : "Down",
     "^" : "Up",
     "D" : "Destination",
-    "B" : "Sidewalk"
+    "B" : "Sidewalk",
+    "Z" : "Pedestrian"
+
 
 }
