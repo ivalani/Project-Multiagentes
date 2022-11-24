@@ -1,9 +1,9 @@
 >>>>>>>>>>>>>>>s>>>>>>>>>>
 >>>>>>>>>>>>>>>s>>>>>>>>>>
 ^^BBDBBBvvBBBBBBSSBBBBBDvv
-^^B####BvvB####B^^B####Bvv
+^^B####BZZB####B^^B####Bvv
 ^^B####BvvD####B^^B####Bvv
-^^B####BvvB####B^^B####Bvv
+^^B####BvvB####BZZB####Bvv
 ^^B####BvvB####B^^B####Bvv
 ^^BBBDBBSSBBBBBB^^BBBBDBvv
 ^^s<<<<<<<s<<<<<<<s<<<<<vv
