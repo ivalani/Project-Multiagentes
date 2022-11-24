@@ -90,3 +90,17 @@ class Road(Agent):
 
     def step(self):
         pass
+
+class SideWalk(Agent):
+    """
+    Sidewalk agent. Determines where the persons can walk. 
+    """
+
+    def __init__(self, unique_id, model):
+        """
+        Creates a new sidewalk.
+        Args:
+            unique_id: agent's ID
+            model: model reference for the agent
+        """
+        super().__init__(unique_id, model)
