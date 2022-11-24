@@ -104,3 +104,17 @@ class SideWalk(Agent):
             model: model reference for the agent
         """
         super().__init__(unique_id, model)
+
+class PedestrianCrossing(Agent):
+    """
+    Pedestrian crossing agent. Determines where a pedestrian can cross the street
+    """
+
+    def __init__(self, unique_id, model):
+        """
+        Creates a new pedestrian crossing,
+        Args:
+            unique id: agent's ID
+            model: model reference
+        """
+        super().__init__(unique_id, model)
