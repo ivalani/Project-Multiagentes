@@ -43,6 +43,13 @@ class RandomModel(Model):
                     elif col == "D":
                         agent = Destination(f"d_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
+                    elif col == "B":
+                        agent = SideWalk(f"sw_{r*self.width+c}", self)
+                        self.grid.place_agent(agent, (c, self.height - r -1 ))
+                    elif col == "Z":
+                        agent = PedestrianCrossing(f"pc_{r*self.width+c}", self)
+                        self.grid.place_agent(agent, (c, self.height - r - 1))
+                        
 
         self.num_agents = N
         self.running = True
