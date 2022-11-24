@@ -71,42 +71,77 @@ class RobotAgent(Agent):
         # Delivers the box to the closest dropZone.
         if self.with_box and self.closest_dropZone != None:
             boxesPos = []
+            options = ["x","y"]
             x,y = self.pos
             x2,y2 = self.closest_dropZone
-            # Movement when dropZone position is lesser than self position.
-            if x > x2:
-                x -= 1
-            elif y > y2:
-                y -= 1
-            # Movement when dropZone position is greater than self position.
-            elif x < x2:
-                x += 1
-            elif y < y2:
-                y += 1
-            # Stays 1 step in dropZone when destination reached.
-            else:
-                x,y = self.closest_dropZone
+            # Already in destiny axis
+            if x == x2:
+                options.remove("x")
+            elif y == y2:
+                options.remove("y")
+            # Randomly selects an axis to move.
+            choice = self.random.choice(options)
+            # Movement in x.
+            if choice == "x":
+                if x > x2:
+                    x -= 1
+                elif x < x2:
+                    x += 1
+                # Stays 1 step in dropZone when destination reached.
+                else:
+                    x,y = self.pos
+            # Movement in y.
+            elif choice == "y":
+                if y > y2:
+                    y -= 1
+                elif y < y2:
+                    y += 1
+                # Stays 1 step in dropZone when destination reached.
+                else:
+                    x,y = self.pos
             pos = (x,y)
             next_move = (pos)
+            # If next_move is not free, moves randomly.
+            if not self.model.grid.is_cell_empty(next_move) and next_move != self.closest_dropZone:
+                next_move = self.random.choice(next_moves)
 
         # 2:
         # The agent has a cooridnate for a last box seen.
         # Moves to the last box seen when it was moving to deliver another box.
         elif self.last_box != None and self.last_box.pos:
+            options = ["x","y"]
             x,y = self.pos
             x2,y2 = self.last_box.pos
-            # Movement when last_box position is lesser than self position.
-            if x > x2:
-                x -= 1
-            elif y > y2:
-                y -= 1
-            # Movement when last_box position is greater than self position.
-            elif x < x2:
-                x += 1
-            elif y < y2:
-                y += 1
+            # Already in destiny axis
+            if x == x2:
+                options.remove("x")
+            elif y == y2:
+                options.remove("y")
+            # Randomly selects an axis to move.
+            choice = self.random.choice(options)
+            # Movement in x.
+            if choice == "x":
+                if x > x2:
+                    x -= 1
+                elif x < x2:
+                    x += 1
+                # Stays 1 step in dropZone when destination reached.
+                else:
+                    x,y = self.pos
+            # Movement in y.
+            elif choice == "y":
+                if y > y2:
+                    y -= 1
+                elif y < y2:
+                    y += 1
+                # Stays 1 step in dropZone when destination reached.
+                else:
+                    x,y = self.pos
             pos = x,y
             next_move = pos
+            # If next_move is not free, moves randomly.
+            if not self.model.grid.is_cell_empty(next_move) and next_move != self.last_box.pos:
+                next_move = self.random.choice(next_moves)
             # Destination reached.
             if self.pos == self.last_box.pos:
                 # Destination still has a box.
@@ -249,7 +284,7 @@ class dropZone(Agent):
         RobotAround = [agent for agent in agentsAround if isinstance(agent, RobotAgent)]
         for rob in RobotAround:
             if  rob.pos == self.pos and rob.with_box:
-                rob.closest_dropZone = None
+                rob.closest_dropZone = rob.get_closest_dropZone(rob,rob.pos)
 
     def step(self):
         if self.stacked_boxes == 5:
