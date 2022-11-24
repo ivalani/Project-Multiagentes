@@ -99,7 +99,13 @@ def getDropZone():
             for i in contents:
                 if isinstance(i, dropZone):
                     dropZonePosition.append(
-                        {"id": str(i.unique_id), "x": x, "y": 1, "z": z}
+                        {
+                            "id": str(i.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z,
+                            "numberBoxes": i.stacked_boxes,
+                        }
                     )
 
         return jsonify({"positions": dropZonePosition})
