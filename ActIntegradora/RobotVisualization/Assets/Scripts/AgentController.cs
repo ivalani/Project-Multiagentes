@@ -14,23 +14,27 @@ public class AgentData
 {
     public string id;
     public float x, y, z;
+    public bool has_box;
 
-    public AgentData(string id, float x, float y, float z)
+    public AgentData(string id, float x, float y, float z, bool has_box)
     {
         this.id = id;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.has_box = has_box;
     }
 }
 
-[Serializable]
 
+[Serializable]
 public class AgentsData
 {
     public List<AgentData> positions;
 
-    public AgentsData() => this.positions = new List<AgentData>();
+    public AgentsData(){
+        this.positions = new List<AgentData>();
+    } 
 }
 
 public class AgentController : MonoBehaviour
@@ -45,9 +49,13 @@ public class AgentController : MonoBehaviour
     string updateEndpoint = "/update";
     AgentsData agentsData, obstacleData, boxesData, dropZoneData;
     Dictionary<string, GameObject> agents;
+    Dictionary<string, GameObject> boxesObject;
+    Dictionary<string, Vector3> boxesPositions;
     Dictionary<string, Vector3> prevPositions, currPositions;
-    Dictionary<string, GameObject> boxes;
     Dictionary<string, GameObject> dropZones;
+    Dictionary<string, bool> hasBoxes;
+    Dictionary<string, bool> boxFlag;
+    Dictionary<string, Vector3> dropZonePositions;
 
     bool updated = false, started = false;
 
@@ -65,29 +73,26 @@ public class AgentController : MonoBehaviour
 
         prevPositions = new Dictionary<string, Vector3>();
         currPositions = new Dictionary<string, Vector3>();
+        boxesPositions = new Dictionary<string, Vector3>();
+        boxesObject = new Dictionary<string, GameObject>();
+        
+        dropZonePositions = new Dictionary<string, Vector3>();
+
+        hasBoxes = new Dictionary<string, bool>();
+        boxFlag = new Dictionary<string, bool>();
 
         agents = new Dictionary<string, GameObject>();
-        boxes = new Dictionary<string, GameObject>();
 
         floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
-        floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
+        floor.transform.localPosition = new Vector3((float)width/2-0.5f, (float)0.5f, (float)height/2-0.5f);
         
         timer = timeToUpdate;
-
-        /*
-        for (int i = 0; i < NAgents; i++)
-        {
-            boxes[i] = Instantiate(box, Vector3.zero, Quaternion.identity);
-        }
-        */
 
         StartCoroutine(SendConfiguration());
     }
 
     private void Update() 
     {   
-        Debug.Log(timer);
-        Debug.Log(updated);
         if(timer < 0)
         {
             timer = timeToUpdate;
@@ -108,12 +113,24 @@ public class AgentController : MonoBehaviour
                 Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
                 Vector3 direction = currentPosition - interpolated;
 
+                string key = "";
+
                 agents[agent.Key].transform.localPosition = interpolated;
                 if(direction != Vector3.zero) agents[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
-            }
 
-            // float t = (timer / timeToUpdate);
-            // dt = t * t * ( 3f - 2f*t);
+                if (hasBoxes[agent.Key] != boxFlag[agent.Key])
+                {
+                    boxFlag[agent.Key] = hasBoxes[agent.Key];
+                    foreach(var boxObject in boxesPositions)
+                    {
+                        if (currentPosition == boxObject.Value)
+                        {
+                            key = boxObject.Key.ToString();
+                            boxesObject[boxObject.Key.ToString()].transform.parent = agents[agent.Key].transform;
+                        }
+                    }
+                }
+            }
         }
     }
  
@@ -127,8 +144,6 @@ public class AgentController : MonoBehaviour
         else 
         {
             StartCoroutine(GetAgentsData());
-            StartCoroutine(GetBoxesData());
-            StartCoroutine(GetDropZoneData());
         }
     }
 
@@ -160,7 +175,6 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetBoxesData());
             StartCoroutine(GetDropZoneData());
 
-
         }
     }
 
@@ -168,7 +182,7 @@ public class AgentController : MonoBehaviour
     {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getAgentsEndpoint);
         yield return www.SendWebRequest();
-        Debug.Log(www.downloadHandler.text);
+
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
         else 
@@ -183,6 +197,7 @@ public class AgentController : MonoBehaviour
                     {
                         prevPositions[agent.id] = newAgentPosition;
                         agents[agent.id] = Instantiate(agentPrefab, newAgentPosition, Quaternion.identity);
+                        boxFlag[agent.id] = agent.has_box;
                     }
                     else
                     {
@@ -190,6 +205,7 @@ public class AgentController : MonoBehaviour
                         if(currPositions.TryGetValue(agent.id, out currentPosition))
                             prevPositions[agent.id] = currentPosition;
                         currPositions[agent.id] = newAgentPosition;
+                        hasBoxes[agent.id] = agent.has_box;
                     }
             }
 
@@ -228,11 +244,11 @@ public class AgentController : MonoBehaviour
         else
         {
             boxesData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
-
-            Debug.Log(boxesData.positions);
             foreach(AgentData boxes in boxesData.positions)
             {
-                Instantiate(box, new Vector3(boxes.x, boxes.y, boxes.z), Quaternion.identity);
+                var newBox = Instantiate(box, new Vector3(boxes.x, boxes.y, boxes.z), Quaternion.identity);
+                boxesObject[boxes.id.ToString()] = newBox;
+                boxesPositions[boxes.id.ToString()] = new Vector3(boxes.x, boxes.y, boxes.z);
             } 
         }
     }
@@ -250,11 +266,10 @@ public class AgentController : MonoBehaviour
         {
             dropZoneData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
 
-            Debug.Log(dropZoneData.positions);
-
             foreach(AgentData dropZones in dropZoneData.positions)
             {
                 Instantiate(dropZone, new Vector3(dropZones.x, dropZones.y, dropZones.z), Quaternion.identity);
+                dropZonePositions[dropZones.id.ToString()] = new Vector3(dropZones.x, dropZones.y, dropZones.z);
             }   
         }
     }
