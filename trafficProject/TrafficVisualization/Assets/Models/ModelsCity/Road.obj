@@ -1,6 +1,6 @@
 # Blender v3.3.1 OBJ File: ''
 # www.blender.org
-mtllib sidewalk.mtl
+mtllib Road.mtl
 o Cubo_Cubo.001
 v -1.000000 -0.059729 1.000000
 v -1.000000 0.059729 1.000000

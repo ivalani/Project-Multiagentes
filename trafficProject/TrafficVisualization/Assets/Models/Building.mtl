@@ -1,12 +1,33 @@
-newmtl BuildingMat
-map_Kd TexturesCom_Various_HighRise6_1K_albedo.tif
-map_Pm TexturesCom_Various_HighRise6_1K_metallic.tif
-bump TexturesCom_Various_HighRise6_1K_normal.tif
-map_Ke TexturesCom_Various_HighRise6_1K_emissive.tif
-Kd 1 1 1
-d 1
+# Blender MTL File: 'Building.blend'
+# Material Count: 3
 
-newmtl RoofMat
-Kd 0.1226415 0.1226415 0.1226415
-d 1
+newmtl Base
+Ns 489.999983
+Ka 1.000000 1.000000 1.000000
+Kd 0.026708 0.026708 0.026708
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
 
+newmtl Concrete
+Ns 2.500001
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump -bm 0.050000 C:\\Tex\\Pavement\\Concrete1NM.tif
+
+newmtl Windows
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.235249 0.525300 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
