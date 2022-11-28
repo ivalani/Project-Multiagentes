@@ -92,8 +92,10 @@ public class CityMaker : MonoBehaviour
             else if (tiles[i] == 'Z'){
                 // Creates pedestrian crossing
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                
-
+                tile = Instantiate(pedestrianCrossing, position, Quaternion.identity);
+                tile.transform.localScale = new Vector3(1, Random.Range(0.5f, 2.0f), 1);
+                tile.transform.parent = transform;
+                x += 1;
             }
             else if (tiles[i] == '\n') {
                 x = 0;
