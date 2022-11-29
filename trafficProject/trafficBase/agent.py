@@ -48,45 +48,49 @@ class Car(Agent):
             #
             self.myDestiny = shortestPath(self.model.list_of_edges, (y,x), (y2,x2))
             self.myDestiny = self.myDestiny[1]
-            idontneedyou = self.myDestiny.pop(0)
+            idontneedit = self.myDestiny.pop(0)
+            print("Removed start point")
+            print(idontneedit)
             x,y = self.myDestiny.pop(0)
             next_move = (y,x)
-            print("memuevaooo")
-            print(next_move)
+            print("Actualmente en:")
         elif self.direction == "Intersection":
             y,x = self.myDestiny.pop(0)
+            print("Referencia de destino:")
             print(x,y)
             x2,y2 = self.pos
+            print("Posicion previa:")
             print(x2,y2)
             # undefinded
             if x > x2:
-                print("derecha")
+                print("Vamos a derecha")
                 next_move = ((x2+1),y2)
             # undefined
             elif x < x2:
-                print("izquierda")
+                print("Vamos a izquierda")
                 next_move = ((x2-1),y2)
             # Goes down to destination
             elif y < y2:
-                print("abajo")
+                print("Vamos a abajo")
                 next_move = (x2,(y2-1))
             # Goes up to destination
             elif y > y2:
-                print("arriba")
+                print("Vamos a arriba")
                 next_move = (x2,(y2+1))
-            print("me muevoaaa")
-            print(next_move)
+            print("Actualmente en:")
 
         whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
         agentsFront = [agent for agent in whatIsFront if not isinstance(agent, Road)]
 
         if agentsFront == []:
             self.model.grid.move_agent(self, next_move)
+            print(next_move)
             self.moving = True
             return
         elif isinstance(agentsFront[0], Traffic_Light) or isinstance(agentsFront[-1], Traffic_Light):
             agentsFront = [agent for agent in agentsFront if isinstance(agent, Traffic_Light)]
             if agentsFront[0].state == True:
+                print(next_move)
                 self.model.grid.move_agent(self, next_move)
                 self.moving = True
                 return
@@ -97,6 +101,7 @@ class Car(Agent):
             agentsFront = [agent for agent in agentsFront if isinstance(agent, PedestrianCrossing)]
             if agentsFront[0].state == False:
                 self.model.grid.move_agent(self, next_move)
+                print(next_move)
                 self.moving = True
                 return
             else:
@@ -105,6 +110,8 @@ class Car(Agent):
         elif isinstance(agentsFront, Car) or isinstance(agentsFront, Bus):
             if agentsFront[0].moving == True:
                 self.model.grid.move_agent(self, next_move)
+                self.moving = True
+                print(next_move)
                 return
             else:
                 self.moving = False
@@ -123,8 +130,6 @@ class Car(Agent):
         else:
             self.direction = self.direction
         self.move()
-        print("Mi misión:")
-        print(self.myDestiny)
         print("-------------------------------------")
 
 class Pedestrian(Agent):
