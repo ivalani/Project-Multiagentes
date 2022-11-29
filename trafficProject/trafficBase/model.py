@@ -52,13 +52,14 @@ class RandomModel(Model):
                         agent = PedestrianCrossing(f"pc_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
 
-        self.num_agents = 4
+        self.num_agents = 3
         self.running = True
-        positions_temp = [(2,0),(0,22),(21,0),(22,21)]
+        positions_temp = [(2,0),(0,22),(21,0)]
         pedPositions = [(2,2),(20,2),(2,22),(20,22),(11,10)]
+        destinys_temp = [(6,4),(1,16),(21,5)]
 
         for i in range(self.num_agents):
-            a = Car(i+1000, self)
+            a = Car(i+1000, self, destinys_temp[i], positions_temp[i])
             pos = positions_temp[i]
             self.schedule.add(a)
             self.grid.place_agent(a, pos)
@@ -73,11 +74,6 @@ class RandomModel(Model):
         pos = 13,12
         self.schedule.add(b)
         self.grid.place_agent(b, pos)
-
-        ba = Bus(3001, self)
-        pos = 4,6
-        self.schedule.add(ba)
-        self.grid.place_agent(ba, pos)
 
     def build_edgesList(self):
         # Mirror map with x and y start at top right corner.
