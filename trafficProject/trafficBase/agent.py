@@ -1,5 +1,6 @@
 from mesa import Agent
 from Graph import *
+import collections
 
 class Car(Agent):
     """
@@ -13,7 +14,7 @@ class Car(Agent):
         self.destiny = destiny
         self.unique_id = unique_id
         self.moving = False
-        self.myDestiny = shortestPath(model.list_of_edges, mySpawnPoint, destiny)
+        self.myDestiny = None
         """
         Creates a new random agent.
         Args:
@@ -34,7 +35,48 @@ class Car(Agent):
             next_move = (self.pos[0] - 1, self.pos[1])
         elif self.direction == "Right":
             next_move = (self.pos[0] + 1, self.pos[1])
-        print(next_move)
+        elif self.direction == "Intersection" and self.pos == self.destiny:
+            print("exito")
+            whereIsDestination = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
+            thereItIs = [agent for agent in whereIsDestination if isinstance(agent, Destination)]
+            next_move = thereItIs[0].pos
+        elif self.direction == "Intersection" and self.myDestiny == None:
+            # Borrar cuando se corrigan las coordenadas del graafo
+            x,y = self.pos
+            x2,y2 = self.destiny
+
+            #
+            self.myDestiny = shortestPath(self.model.list_of_edges, (y,x), (y2,x2))
+            self.myDestiny = self.myDestiny[1]
+            idontneedyou = self.myDestiny.pop(0)
+            x,y = self.myDestiny.pop(0)
+            next_move = (y,x)
+            print("memuevaooo")
+            print(next_move)
+        elif self.direction == "Intersection":
+            y,x = self.myDestiny.pop(0)
+            print(x,y)
+            x2,y2 = self.pos
+            print(x2,y2)
+            # undefinded
+            if x > x2:
+                print("derecha")
+                next_move = ((x2+1),y2)
+            # undefined
+            elif x < x2:
+                print("izquierda")
+                next_move = ((x2-1),y2)
+            # Goes down to destination
+            elif y < y2:
+                print("abajo")
+                next_move = (x2,(y2-1))
+            # Goes up to destination
+            elif y > y2:
+                print("arriba")
+                next_move = (x2,(y2+1))
+            print("me muevoaaa")
+            print(next_move)
+
         whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
         agentsFront = [agent for agent in whatIsFront if not isinstance(agent, Road)]
 
@@ -76,18 +118,13 @@ class Car(Agent):
         """
         currentIn = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=0)
         RoadDirection = [agent for agent in currentIn if isinstance(agent, Road)]
-        if RoadDirection != [] and RoadDirection[0].direction != "Intersection":
+        if RoadDirection != []:
             self.direction = RoadDirection[0].direction
         else:
             self.direction = self.direction
-        print("Posicion:")
-        print(self.pos)
-        print(self.direction)
-        print("Destino:")
-        print(self.destiny)
+        self.move()
         print("Mi misión:")
         print(self.myDestiny)
-        self.move()
         print("-------------------------------------")
 
 class Pedestrian(Agent):

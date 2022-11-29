@@ -54,11 +54,13 @@ class RandomModel(Model):
 
         self.num_agents = 3
         self.running = True
-        positions_temp = [(2,0),(0,22),(21,0)]
+        #positions_temp = [(2,0),(0,22),(21,0)]
+        positions_temp = [(0,22)]
         pedPositions = [(2,2),(20,2),(2,22),(20,22),(11,10)]
-        destinys_temp = [(6,4),(1,16),(21,5)]
+        #destinys_temp = [(6,4),(1,15),(22,5)]
+        destinys_temp = [(1,15)]
 
-        for i in range(self.num_agents):
+        for i in range(len(positions_temp)):
             a = Car(i+1000, self, destinys_temp[i], positions_temp[i])
             pos = positions_temp[i]
             self.schedule.add(a)
@@ -69,12 +71,12 @@ class RandomModel(Model):
             pos = pedPositions[i]
             self.schedule.add(a)
             self.grid.place_agent(a, pos)
-
+        """
         b = Bus(3000, self)
         pos = 13,12
         self.schedule.add(b)
         self.grid.place_agent(b, pos)
-
+"""
     def build_edgesList(self):
         # Mirror map with x and y start at top right corner.
         matrixInverted = []
