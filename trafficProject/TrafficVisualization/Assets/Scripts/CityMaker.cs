@@ -80,7 +80,7 @@ public class CityMaker : MonoBehaviour
                 // Creates building
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(buildingPrefab, position, Quaternion.identity);
-                // tile.transform.localScale = new Vector3(1, Random.Range(0.5f, 2.0f), 1);
+                tile.transform.localScale = new Vector3(0.5f, Random.Range(0.5f, 2.0f), 0.5f);
                 tile.transform.parent = transform;
                 x += 1;
             }
@@ -88,15 +88,19 @@ public class CityMaker : MonoBehaviour
                 // Creates sidewalk
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(sideWalkPrefab, position, Quaternion.identity);
-                // tile.transform.localScale = new Vector3(1, Random.Range(0.5f, 2.0f), 1);
                 tile.transform.parent = transform;
                 x += 1;
             } 
             else if (tiles[i] == 'Z'){
                 // Creates pedestrian crossing
                 position = new Vector3(x * tileSize, 0, y * tileSize);
-                tile = Instantiate(pedestrianCrossing, position, Quaternion.identity);
-                // tile.transform.localScale = new Vector3(1, Random.Range(0.5f, 2.0f), 1);
+                tile = Instantiate(pedestrianCrossing, position, Quaternion.Euler(0, 0, 0));
+                tile.transform.parent = transform;
+                x += 1;
+            }
+            else if (tiles[i] == 'z'){
+                position = new Vector3(x * tileSize, 0, y * tileSize);
+                tile = Instantiate(pedestrianCrossing, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
                 x += 1;
             }
