@@ -48,7 +48,7 @@ class RandomModel(Model):
                         agent = SideWalk(f"sw_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r -1 ))
 
-                    elif col == "Z":
+                    elif col in ["Z", "z"]:
                         agent = PedestrianCrossing(f"pc_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
 
@@ -84,7 +84,7 @@ class RandomModel(Model):
         matrixInverted = []
 
         # Read map from file.
-        with open('2022_basetest.txt', 'r') as f:
+        with open('2022_base.txt', 'r') as f:
             matrixInverted = [[o for o in line.strip()] for line in f]
 
         # Matrix of map with corrections of coordinates.
