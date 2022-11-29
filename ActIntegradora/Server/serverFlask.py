@@ -45,9 +45,17 @@ def getRobots():
             for i in contents:
                 if isinstance(i, RobotAgent):
                     robotPositions.append(
-                        {"id": str(i.unique_id), "x": x, "y": 1, "z": z}
+                        {
+                            "id": str(i.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z,
+                            "has_box": i.with_box,
+                        }
                     )
-
+                    if i.with_box:
+                        print("SIUUU")
+        print(robotPositions)
         return jsonify({"positions": robotPositions})
 
 
@@ -77,23 +85,33 @@ def getBoxes():
             for i in contents:
                 if isinstance(i, Box):
                     boxPosition.append({"id": str(i.unique_id), "x": x, "y": 1, "z": z})
-
         return jsonify({"positions": boxPosition})
 
-@app.route("/getDropZone", methods = ["GET"])
+
+@app.route("/getDropZone", methods=["GET"])
 def getDropZone():
     global randomModel
     dropZonePosition = []
 
-    if request.method == 'GET':
+    if request.method == "GET":
 
         for (contents, x, z) in randomModel.grid.coord_iter():
             for i in contents:
                 if isinstance(i, dropZone):
-                    dropZonePosition.append({"id": str(i.unique_id), "x":x, "y": 1, "z":z})
-        
+                    dropZonePosition.append(
+                        {
+                            "id": str(i.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z,
+                            "numberBoxes": i.stacked_boxes,
+                        }
+                    )
+
         return jsonify({"positions": dropZonePosition})
-        
+
+
+# @app.route("")
 @app.route("/update", methods=["GET"])
 def updateModel():
 
@@ -113,4 +131,3 @@ def updateModel():
 
 if __name__ == "__main__":
     app.run(host="localhost", port=8000, debug=True)
-
