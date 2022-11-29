@@ -1,13 +1,19 @@
 # Presentación del reto TC2008B 
 ## _Indice_ 
-1. [Propuesta formal](#propuesta-formal)
-2. [Tarea M4](#tarea-M4)
-3. [Modelación de agentes](#modelacion-de-agentes)
-    1. [Agentes involucrados actualización](#agentes-involucrados-actualización)
-    2. [Interaccion entre agentes actualización](#interaccion-entre-agentes-actualización)
-4. [Prioridad de acciones](#prioridad-de-acciones)
+- [Presentación del reto TC2008B](#presentación-del-reto-tc2008b)
+  - [_Indice_](#indice)
+  - [_Instalacion_](#instalacion)
+  - [_Propuesta formal_](#propuesta-formal)
+  - [_Tarea M4_](#tarea-m4)
+  - [_Modelacion de agentes_](#modelacion-de-agentes)
+    - [_Agentes involucrados actualización_](#agentes-involucrados-actualización)
+    - [_Interaccion entre agentes actualización:_](#interaccion-entre-agentes-actualización)
+    - [_Prioridad de acciones_](#prioridad-de-acciones)
 
 --- 
+## _Instalacion_
+Para instalar los requerimientos usamos: 
+    pip install -r requirements.txt
 ## _Propuesta formal_ 
 
 Al inicio del bloque se diseño una propuesta formal inicial que ha tenido leve cambios que se podran ver en el desarrollo de cada uno de los avances reportados. 
