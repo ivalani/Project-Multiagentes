@@ -52,9 +52,9 @@ class RandomModel(Model):
                         agent = PedestrianCrossing(f"pc_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
 
-        self.num_agents = N
+        self.num_agents = 4
         self.running = True
-        positions_temp = [(0,0),(0,22),(22,0),(22,22),(13,9)]
+        positions_temp = [(2,0),(0,22),(21,0),(22,21)]
         pedPositions = [(2,2),(20,2),(2,22),(20,22),(11,10)]
 
         for i in range(self.num_agents):
