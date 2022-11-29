@@ -5,6 +5,7 @@
 from flask import Flask, request, jsonify
 from agent import *
 from model import *
+from termcolor import cprint
 
 # Size of the board:
 number_agents = 10
@@ -27,12 +28,11 @@ def initModel():
             height = int(request.form.get("height"))
             current_step = 0
 
-            print(request.form)
-            print(number_agents, width, height)
-            random_model = RandomModel(number_agents, width, height)
-
+            random_model = RandomModel(number_agents)
+            cprint("Model initialized successfully!", "green")
             return jsonify({"message": "Parameters recieved, model initiated."})
         except:
+            cprint("Failed to initialize model!", "red")
             return jsonify({"message": "Failed to initialize model!"})
 
 
@@ -47,9 +47,10 @@ def getAgents():
                 for (a, x, z) in random_model.grid.coord_iter()
                 if isinstance(a, Car)
             ]
-
+            cprint("Agents positions received!", "green")
             return jsonify({"positions": agent_positions})
         except:
+            cprint("Failed to receive agent's position!", "red")
             return jsonify({"message": "Failed to get agents positions!"})
 
 
@@ -64,9 +65,10 @@ def getObstacles():
                 for (a, x, z) in random_model.grid.coord_iter()
                 if isinstance(a, Obstacle)
             ]
-
+            cprint("Obstacle positions received!", "green")
             return jsonify({"positions": obstacle_positions})
         except:
+            cprint("Failed to receive obstacles' position!", "red")
             return jsonify({"message": "Failed to get obstacle positions!"})
 
 
@@ -77,6 +79,7 @@ def updateModel():
         try:
             random_model.step()
             current_step += 1
+            cprint("Model updated!", "green")
             return jsonify(
                 {
                     "message": f"Model updated to step {current_step}.",
@@ -84,7 +87,8 @@ def updateModel():
                 }
             )
         except:
-            return jsonify({"message": "Failed to update model step!"})
+            cprint("Failed to update model!", "red")
+            return jsonify({"message": "Failed to update model!"})
 
 
 if __name__ == "__main__":
