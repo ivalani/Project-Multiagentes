@@ -9,6 +9,7 @@
     "D" : "Destination",
     "B" : "Sidewalk",
     "Z" : "Pedestrian",
+    "z" : "Pedestrian",
     "+" : "Intersection"
 
 

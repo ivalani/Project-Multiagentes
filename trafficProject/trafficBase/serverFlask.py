@@ -9,8 +9,6 @@ from termcolor import cprint
 
 # Size of the board:
 number_agents = 10
-width = 28
-height = 28
 random_model = None
 current_step = 0
 
@@ -23,9 +21,6 @@ def initModel():
 
     if request.method == "POST":
         try:
-            number_agents = int(request.form.get("NAgents"))
-            width = int(request.form.get("width"))
-            height = int(request.form.get("height"))
             current_step = 0
 
             random_model = RandomModel(number_agents)
@@ -36,42 +31,101 @@ def initModel():
             return jsonify({"message": "Failed to initialize model!"})
 
 
-@app.route("/getAgents", methods=["GET"])
-def getAgents():
+@app.route("/getCars", methods=["GET"])
+def getCar():
     global random_model
+
+    carPositions = []
+    if request.method == "GET":
+        try:
+            for(contents, x, z) in random_model.grid.coord_iter():
+                for i in contents:
+                    if isinstance(i, Car):
+                        carPositions.append({
+                            "id": str(i.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z,
+                        })
+    
+            cprint("Cars positions received!", "green")
+            return jsonify({"positions": carPositions})
+        except:
+            cprint("Failed to receive cars position!", "red")
+            return jsonify({"message": "Failed to get cars positions!"})
+
+
+@app.route("/getBuses", methods=["GET"])
+def getBus():
+    global random_model
+
+    busPosition = []
+    if request.method == "GET":
+        try:
+            for (contents, x, z) in random_model.grid.coord_iter():
+                for i in contents:
+                    if isinstance(i, Bus):
+                        busPosition.append({
+                            "id": str(i.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z
+                        })
+
+            cprint("Buses positions received!", "green")
+            return jsonify({"positions": busPosition})
+        except:
+            cprint("Failed to receive buses position!", "red")
+            return jsonify({"message": "Failed to get buses positions!"})
+
+@app.route('/getPedestrians', methods = ["GET"])
+def getPedestrians():
+    global random_model
+
+    pedestrianPosition = []
+    if request.method == "GET":
+        try:
+
+            for (contents, x, z) in random_model.grid.coord_iter():
+                for i in contents:
+                    if isinstance(i, Pedestrian):
+                        pedestrianPosition.append({
+                            "id": str(i.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z,
+                        })
+            cprint("Pedestrians positions received!", "green")
+            return jsonify({"positions": pedestrianPosition})
+        except:
+            cprint("Failed to get pedestrians positions", "red")
+            return jsonify({"message": "Failed get pedestrians positions"})
+
+@app.route("/trafficLightState", methods = ["GET"])
+def getTrafficLightState():
+    global random_model
+
+    trafficLights = []
 
     if request.method == "GET":
         try:
-            agent_positions = [
-                {"id": str(a.unique_id), "x": x, "y": 1, "z": z}
-                for (a, x, z) in random_model.grid.coord_iter()
-                if isinstance(a, Car)
-            ]
-            cprint("Agents positions received!", "green")
-            return jsonify({"positions": agent_positions})
+            for (contents, x, z) in random_model.grid.coord_iter():
+                for i in contents:
+                    if isinstance(i, Traffic_Light):
+                        print(i)
+                        trafficLights.append({
+                            "id": str(i.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z,
+                            "state": i.state,
+                        })
+            cprint("Traffic lights state received!")
+            return jsonify({"positions": trafficLights})
         except:
-            cprint("Failed to receive agent's position!", "red")
-            return jsonify({"message": "Failed to get agents positions!"})
-
-
-@app.route("/getObstacles", methods=["GET"])
-def getObstacles():
-    global random_model
-
-    if request.method == "GET":
-        try:
-            obstacle_positions = [
-                {"id": str(a.unique_id), "x": x, "y": 1, "z": z}
-                for (a, x, z) in random_model.grid.coord_iter()
-                if isinstance(a, Obstacle)
-            ]
-            cprint("Obstacle positions received!", "green")
-            return jsonify({"positions": obstacle_positions})
-        except:
-            cprint("Failed to receive obstacles' position!", "red")
-            return jsonify({"message": "Failed to get obstacle positions!"})
-
-
+            cprint("Failed to get traffic lights state!", "red")
+            return jsonify({"message": "Failed to get traffic lights state"})
+            
 @app.route("/update", methods=["GET"])
 def updateModel():
     global current_step, random_model
