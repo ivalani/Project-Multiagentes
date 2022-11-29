@@ -1,4 +1,5 @@
 from mesa import Agent
+from Graph import *
 
 class Car(Agent):
     """
