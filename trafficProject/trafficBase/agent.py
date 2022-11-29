@@ -54,7 +54,7 @@ class Car(Agent):
             x,y = self.myDestiny.pop(0)
             next_move = (y,x)
             print("Actualmente en:")
-        elif self.direction == "Intersection":
+        elif self.direction == "Intersection" and self.moving == True:
             y,x = self.myDestiny.pop(0)
             print("Referencia de destino:")
             print(x,y)
@@ -78,6 +78,9 @@ class Car(Agent):
                 print("Vamos a arriba")
                 next_move = (x2,(y2+1))
             print("Actualmente en:")
+        else:
+            next_move = self.pos
+
 
         whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
         agentsFront = [agent for agent in whatIsFront if not isinstance(agent, Road)]
@@ -127,6 +130,21 @@ class Car(Agent):
         RoadDirection = [agent for agent in currentIn if isinstance(agent, Road)]
         if RoadDirection != []:
             self.direction = RoadDirection[0].direction
+        elif self.direction == "Intersection" and self.myDestiny != []:
+            y,x = self.myDestiny[0]
+            x2,y2 = self.pos
+            # undefinded
+            if x > x2:
+                self.direction = "Right"
+            # undefined
+            elif x < x2:
+                self.direction = "Left"
+            # Goes down to destination
+            elif y < y2:
+                self.direction = "Down"
+            # Goes up to destination
+            elif y > y2:
+                self.direction = "Up"
         else:
             self.direction = self.direction
         self.move()
