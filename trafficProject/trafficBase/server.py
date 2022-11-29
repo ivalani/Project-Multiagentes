@@ -5,21 +5,34 @@ from mesa.visualization.ModularVisualization import ModularServer
 
 def agent_portrayal(agent):
     if agent is None: return
-    
+
     portrayal = {"Shape": "rect",
                  "Filled": "true",
                  "Layer": 1,
                  "w": 1,
-                 "h": 1
+                 "h": 1,
+                 "Color": "Blue",
                  }
+
+    if isinstance(agent, Pedestrian):
+        portrayal["Color"] = "White"
+        portrayal["Layer"] = 1
+        portrayal["Shape"] = "circle"
+        portrayal["r"] = .35
 
     if (isinstance(agent, Road)):
         portrayal["Color"] = "grey"
         portrayal["Layer"] = 0
-    
+
     if (isinstance(agent, Destination)):
         portrayal["Color"] = "lightgreen"
         portrayal["Layer"] = 0
+
+    if (isinstance(agent, Bus)):
+        portrayal["Color"] = "black"
+        portrayal["Layer"] = 1
+        portrayal["w"] = .5
+        portrayal["h"] = 1
 
     if (isinstance(agent, Traffic_Light)):
         portrayal["Color"] = "red" if not agent.state else "green"
@@ -59,6 +72,6 @@ print(width, height)
 grid = CanvasGrid(agent_portrayal, width, height, 500, 500)
 
 server = ModularServer(RandomModel, [grid], "Traffic Base", model_params)
-                       
+
 server.port = 8521 # The default
 server.launch()
