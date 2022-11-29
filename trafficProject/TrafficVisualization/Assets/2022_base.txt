@@ -4,8 +4,8 @@ vvBDBBBBBBBBBvvBSSBBBD^^
 vvB#########BZZB^^B##B^^
 vvB#########DvvB^^D##B^^
 vvBDBBBBBBBBBvvB^^B##B^^
-vvZ<<<<<s<<<<vvB^^B##B^^
-vvZ<<<<<s<<<<vvB^^B##B^^
+vvz<<<<<s<<<<vvB^^B##B^^
+vvz<<<<<s<<<<vvB^^B##B^^
 vvBBBBSSBBBBBZZBZZB##B^^
 vvD##D^^B###DvvB^^B##B^^
 vvB##B^^B###BvvB^^D##B^^
@@ -13,8 +13,8 @@ SSBBBB^^BBBBBvvB^^BBBB^^
 vvs<<<<<<<<<<<<<<<<<<<<<
 vvs<<<<<<<<<<<<<<<<<<<<<
 vvBBBBBBBBBBvv###^^###^^
-vv>>>>>>>>>Z>>>>>>>>>s^^
-vv>>>>>>>>>Z>>>>>>>>>s^^
+vv>>>>>>>>>z>>>>>>>>>s^^
+vv>>>>>>>>>z>>>>>>>>>s^^
 vvBBBBvvBBDBBvvBZZBBBBSS
 vvB##BvvB###BvvB^^B##B^^
 vvB##BvvB###BvvB^^B##D^^
