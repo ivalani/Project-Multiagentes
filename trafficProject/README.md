@@ -13,6 +13,7 @@
 --- 
 ## _Instalacion_
 Para instalar los requerimientos usamos
+
     pip install -r requirements.txt
 ## _Propuesta formal_ 
 
