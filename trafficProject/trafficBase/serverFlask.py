@@ -21,7 +21,6 @@ def initModel():
 
     if request.method == "POST":
         try:
-            number_agents = int(request.form.get("NAgents"))
             current_step = 0
 
             random_model = RandomModel(number_agents)
@@ -46,7 +45,7 @@ def getCar():
                             "id": str(i.unique_id),
                             "x": x,
                             "y": 1,
-                            "z": z
+                            "z": z,
                         })
     
             cprint("Cars positions received!", "green")
@@ -94,7 +93,7 @@ def getPedestrians():
                             "id": str(i.unique_id),
                             "x": x,
                             "y": 1,
-                            "z": z
+                            "z": z,
                         })
             cprint("Pedestrians positions received!", "green")
             return jsonify({"positions": pedestrianPosition})
