@@ -100,6 +100,31 @@ def getPedestrians():
         except:
             cprint("Failed to get pedestrians positions", "red")
             return jsonify({"message": "Failed get pedestrians positions"})
+
+@app.route("/trafficLightState", methods = ["GET"])
+def getTrafficLightState():
+    global random_model
+
+    trafficLights = []
+
+    if request.method == "GET":
+        try:
+            for (contents, x, z) in random_model.grid.coord_iter():
+                for i in contents:
+                    if isinstance(i, Traffic_Light):
+                        print(i)
+                        trafficLights.append({
+                            "id": str(i.unique_id),
+                            "x": x,
+                            "y": 1,
+                            "z": z,
+                            "state": i.state,
+                        })
+            cprint("Traffic lights state received!")
+            return jsonify({"positions": trafficLights})
+        except:
+            cprint("Failed to get traffic lights state!", "red")
+            return jsonify({"message": "Failed to get traffic lights state"})
             
 @app.route("/update", methods=["GET"])
 def updateModel():
