@@ -17,7 +17,7 @@ app = Flask("Traffic example")
 
 @app.route("/init", methods=["POST", "GET"])
 def initModel():
-    global current_step, random_model, number_agents, width, height
+    global current_step, random_model, number_agent
 
     if request.method == "POST":
         try:
