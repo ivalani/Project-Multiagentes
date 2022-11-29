@@ -4,10 +4,13 @@ class Car(Agent):
     """
     Agent that moves randomly.
     Attributes:
-        unique_id: Agent's ID 
+        unique_id: Agent's ID
         direction: Randomly chosen direction chosen from one of eight directions
     """
     def __init__(self, unique_id, model):
+        self.direction = None
+        self.unique_id = unique_id
+        self.moving = False
         """
         Creates a new random agent.
         Args:
@@ -17,15 +20,182 @@ class Car(Agent):
         super().__init__(unique_id, model)
 
     def move(self):
-        """ 
+        """
         Determines if the agent can move in the direction that was chosen
-        """        
-        self.model.grid.move_to_empty(self)
+        """
+        if self.direction == "Up":
+            next_move = (self.pos[0], self.pos[1] + 1)
+        elif self.direction == "Down":
+            next_move = (self.pos[0], self.pos[1] - 1)
+        elif self.direction == "Left":
+            next_move = (self.pos[0] - 1, self.pos[1])
+        elif self.direction == "Right":
+            next_move = (self.pos[0] + 1, self.pos[1])
+
+        whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
+        agentsFront = [agent for agent in whatIsFront if not isinstance(agent, Road)]
+
+        if agentsFront == []:
+            self.model.grid.move_agent(self, next_move)
+            self.moving = True
+            return
+        elif isinstance(agentsFront[0], Traffic_Light) or isinstance(agentsFront[-1], Traffic_Light):
+            agentsFront = [agent for agent in agentsFront if isinstance(agent, Traffic_Light)]
+            if agentsFront[0].state == True:
+                self.model.grid.move_agent(self, next_move)
+                self.moving = True
+                return
+            else:
+                self.moving = False
+                return
+        elif isinstance(agentsFront[0], PedestrianCrossing) or isinstance(agentsFront[-1], PedestrianCrossing):
+            agentsFront = [agent for agent in agentsFront if isinstance(agent, PedestrianCrossing)]
+            if agentsFront[0].state == False:
+                self.model.grid.move_agent(self, next_move)
+                self.moving = True
+                return
+            else:
+                self.moving = False
+                return
+        elif isinstance(agentsFront, Car) or isinstance(agentsFront, Bus):
+            if agentsFront[0].moving == True:
+                self.model.grid.move_agent(self, next_move)
+                return
+            else:
+                self.moving = False
+                return
+
+
 
     def step(self):
-        """ 
+        """
         Determines the new direction it will take, and then moves
         """
+        currentIn = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=0)
+        RoadDirection = [agent for agent in currentIn if isinstance(agent, Road)]
+        if RoadDirection != []:
+            self.direction = RoadDirection[0].direction
+        else:
+            self.direction = self.direction
+        print("Posicion:")
+        print(self.pos)
+        print(self.direction)
+        print("-------------------------------------")
+        self.move()
+
+class Pedestrian(Agent):
+    """
+    Pedestrian agent.
+    """
+    def __init__(self, unique_id, model):
+        """
+        Creates a new pedestrian.
+        Args:
+            unique_id: agent's ID
+            model: model reference
+        """
+        super().__init__(unique_id, model)
+
+    def move(self):
+        posibleSteps = self.model.grid.get_neighbors(self.pos, moore=False, include_center=False, radius=1)
+        isPedestrianViable = [agent.pos for agent in posibleSteps if isinstance(agent, PedestrianCrossing) or isinstance(agent, SideWalk) or isinstance(agent, Destination) or isinstance(agent, Traffic_Light)]
+        next_move = self.random.choice(isPedestrianViable)
+        self.model.grid.move_agent(self, next_move)
+
+    def step(self):
+        self.move()
+
+class Bus(Agent):
+    """
+    Bus agent.
+    """
+    def __init__(self, unique_id, model):
+        """
+        Creates a new bus.
+        Args:
+            unique_id: agent's ID
+            model: model reference
+        """
+        super().__init__(unique_id, model)
+        self.route = [(1,9),(6,8),(22,11)]
+        self.direction = None
+        self.lastDirection = None
+        self.moving = False
+
+    def move(self):
+        """
+        Determines if the agent can move in the direction that was chosen
+        """
+        if self.pos == self.route[0]:
+            if self.direction != self.lastDirection:
+                self.direction = self.lastDirection
+            else:
+                self.direction = self.direction
+            temp = self.route[0]
+            self.route.remove(self.route[0])
+            self.route.append(temp)
+
+        if self.direction == "Up":
+            next_move = (self.pos[0], self.pos[1] + 1)
+        elif self.direction == "Down":
+            next_move = (self.pos[0], self.pos[1] - 1)
+        elif self.direction == "Left":
+            next_move = (self.pos[0] - 1, self.pos[1])
+        elif self.direction == "Right":
+            next_move = (self.pos[0] + 1, self.pos[1])
+        else:
+            return
+
+        whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
+        agentsFront = [agent for agent in whatIsFront if not isinstance(agent, Road)]
+
+        if agentsFront == []:
+            self.model.grid.move_agent(self, next_move)
+            self.moving = True
+            return
+        elif isinstance(agentsFront[0], Traffic_Light) or isinstance(agentsFront[-1], Traffic_Light):
+            agentsFront = [agent for agent in agentsFront if isinstance(agent, Traffic_Light)]
+            if agentsFront[0].state == True:
+                self.model.grid.move_agent(self, next_move)
+                self.moving = True
+                return
+            else:
+                self.moving = False
+                return
+        elif isinstance(agentsFront[0], PedestrianCrossing) or isinstance(agentsFront[-1], PedestrianCrossing):
+            agentsFront = [agent for agent in agentsFront if isinstance(agent, PedestrianCrossing)]
+            if agentsFront[0].state == False:
+                self.model.grid.move_agent(self, next_move)
+                self.moving = True
+                return
+            else:
+                self.moving = False
+                return
+        elif isinstance(agentsFront, Car) or isinstance(agentsFront, Bus):
+            if agentsFront[0].moving == True:
+                self.model.grid.move_agent(self, next_move)
+                return
+            else:
+                self.moving = False
+                return
+
+
+
+    def step(self):
+        """
+        Determines the new direction it will take, and then moves
+        """
+        currentIn = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=0)
+        RoadDirection = [agent for agent in currentIn if isinstance(agent, Road)]
+        if RoadDirection != []:
+            self.lastDirection = self.direction
+            self.direction = RoadDirection[0].direction
+        else:
+            self.direction = self.direction
+        print("Posicion:")
+        print(self.pos)
+        print(self.direction)
+        print("-------------------------------------")
         self.move()
 
 class Traffic_Light(Agent):
@@ -40,13 +210,13 @@ class Traffic_Light(Agent):
             unique_id: The agent's ID
             model: Model reference for the agent
             state: Whether the traffic light is green or red
-            timeToChange: After how many step should the traffic light change color 
+            timeToChange: After how many step should the traffic light change color
         """
         self.state = state
         self.timeToChange = timeToChange
 
     def step(self):
-        """ 
+        """
         To change the state (green or red) of the traffic light in case you consider the time to change of each traffic light.
         """
         # if self.model.schedule.steps % self.timeToChange == 0:
@@ -93,7 +263,7 @@ class Road(Agent):
 
 class SideWalk(Agent):
     """
-    Sidewalk agent. Determines where the persons can walk. 
+    Sidewalk agent. Determines where the persons can walk.
     """
 
     def __init__(self, unique_id, model):
@@ -118,3 +288,5 @@ class PedestrianCrossing(Agent):
             model: model reference
         """
         super().__init__(unique_id, model)
+        self.state = False
+
