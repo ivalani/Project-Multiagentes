@@ -1,4 +1,5 @@
 from mesa import Agent
+from Graph import *
 
 class Car(Agent):
     """
@@ -7,10 +8,12 @@ class Car(Agent):
         unique_id: Agent's ID
         direction: Randomly chosen direction chosen from one of eight directions
     """
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, destiny, mySpawnPoint):
         self.direction = None
+        self.destiny = destiny
         self.unique_id = unique_id
         self.moving = False
+        self.myDestiny = shortestPath(model.list_of_edges, mySpawnPoint, destiny)
         """
         Creates a new random agent.
         Args:
@@ -31,7 +34,7 @@ class Car(Agent):
             next_move = (self.pos[0] - 1, self.pos[1])
         elif self.direction == "Right":
             next_move = (self.pos[0] + 1, self.pos[1])
-
+        print(next_move)
         whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
         agentsFront = [agent for agent in whatIsFront if not isinstance(agent, Road)]
 
@@ -73,15 +76,19 @@ class Car(Agent):
         """
         currentIn = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=0)
         RoadDirection = [agent for agent in currentIn if isinstance(agent, Road)]
-        if RoadDirection != []:
+        if RoadDirection != [] and RoadDirection[0].direction != "Intersection":
             self.direction = RoadDirection[0].direction
         else:
             self.direction = self.direction
         print("Posicion:")
         print(self.pos)
         print(self.direction)
-        print("-------------------------------------")
+        print("Destino:")
+        print(self.destiny)
+        print("Mi misión:")
+        print(self.myDestiny)
         self.move()
+        print("-------------------------------------")
 
 class Pedestrian(Agent):
     """
@@ -192,11 +199,11 @@ class Bus(Agent):
             self.direction = RoadDirection[0].direction
         else:
             self.direction = self.direction
-        print("Posicion:")
+        print("Posicion Bus:")
         print(self.pos)
         print(self.direction)
-        print("-------------------------------------")
         self.move()
+        print("-------------------------------------")
 
 class Traffic_Light(Agent):
     """

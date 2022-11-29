@@ -8,7 +8,9 @@
     "^" : "Up",
     "D" : "Destination",
     "B" : "Sidewalk",
-    "Z" : "Pedestrian"
+    "Z" : "Pedestrian",
+    "z" : "Pedestrian",
+    "+" : "Intersection"
 
 
 }
