@@ -21,6 +21,7 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Bump -bm 0.050000 C:\\Tex\\Pavement\\Concrete1NM.tif
+map_Kd C:\\Tex\\Pavement\\Concrete1.tif
 
 newmtl Windows
 Ns 250.000000
