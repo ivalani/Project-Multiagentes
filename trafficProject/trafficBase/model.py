@@ -19,7 +19,7 @@ class RandomModel(Model):
         self.running = True
         positions_temp = []
         pedPos_temp = []
-        destinys_temp = [(1,15),(3,18),(3,23),(6,4),(6,15),(9,8),(13,4),(13,15),(13,20),(17,14),(17,20),(19,1),(22,5),(22,22)]
+        destinys_temp = [(1,15),(3,18),(3,23),(6,4),(6,15),(9,8),(13,4),(13,14),(13,20),(17,14),(17,20),(19,1),(22,5),(22,22)]
 
         with open('2022_base.txt') as baseFile:
             lines = baseFile.readlines()
