@@ -7,12 +7,16 @@ class Car(Agent):
     Agent that moves randomly.
     Attributes:
         unique_id: Agent's ID
-        direction: Randomly chosen direction chosen from one of eight directions
+        direction: Direction in which the agent is moving, its based on the Road's direction. When Intersection, it will choose the next direction based on destiny
+        destiny: Coordinates of the destination.
+        moving: Boolean that determines if the agent is moving or not
+        myDestiny: List of coordinates that the agent will follow to reach the destiny
+        lastNode: Last node of the graph that the agent visited
     """
-    def __init__(self, unique_id, model, destiny, mySpawnPoint):
+    def __init__(self, unique_id, model, destiny):
+        self.unique_id = unique_id
         self.direction = None
         self.destiny = destiny
-        self.unique_id = unique_id
         self.moving = False
         self.myDestiny = None
         self.lastNode = None
@@ -37,29 +41,30 @@ class Car(Agent):
         elif self.direction == "Right":
             next_move = (self.pos[0] + 1, self.pos[1])
         elif self.direction == "Intersection" and self.pos == self.destiny:
-            print("exito")
             whereIsDestination = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
             thereItIs = [agent for agent in whereIsDestination if isinstance(agent, Destination)]
             next_move = thereItIs[0].pos
+            self.model.grid.move_agent(self, next_move)
+            self.model.schedule.remove(self)
+            return
         elif self.direction == "Intersection" and self.myDestiny == None:
             # Borrar cuando se corrigan las coordenadas del graafo
             x,y = self.pos
             x2,y2 = self.destiny
-
-            #
             self.myDestiny = shortestPath(self.model.list_of_edges, (y,x), (y2,x2))
+            ###############################################################
             self.myDestiny = self.myDestiny[1]
-            idontneedit = self.myDestiny.pop(0)
+            x,y = self.myDestiny.pop(0)
             x,y = self.myDestiny.pop(0)
             next_move = (y,x)
         elif self.direction == "Intersection":
             y,x = self.myDestiny.pop(0)
             x2,y2 = self.pos
             self.lastNode = (x,y)
-            # undefinded
+            # Goes right to destination
             if x > x2:
                 next_move = ((x2+1),y2)
-            # undefined
+            # Goes left to destination
             elif x < x2:
                 next_move = ((x2-1),y2)
             # Goes down to destination

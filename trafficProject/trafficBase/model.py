@@ -59,7 +59,7 @@ class RandomModel(Model):
         destinys_temp = [(6,4),(1,15),(22,5)]
 
         for i in range(len(positions_temp)):
-            a = Car(i+1000, self, destinys_temp[i], positions_temp[i])
+            a = Car(i+1000, self, destinys_temp[i])
             pos = positions_temp[i]
             self.schedule.add(a)
             self.grid.place_agent(a, pos)
