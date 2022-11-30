@@ -155,7 +155,7 @@ MonoBehaviour:
   agentPrefab: {fileID: 5924147488500154945, guid: b68b6351759b928489a25bf187a378e6, type: 3}
   obstaclePrefab: {fileID: 8517897001039776426, guid: 310c5a6d4414eb14388336d05beeba7b, type: 3}
   floor: {fileID: 1317850861}
-  box: {fileID: 2851873960711616821, guid: f410020a0b7d16247802df5ca0a418d3, type: 3}
+  box: {fileID: 8169378043855727489, guid: 1a3c03e5e3dde48a0a10c03c6502303c, type: 3}
   dropZone: {fileID: 2768136376759714606, guid: 213b6d3ebebac4b3085a64d5efea3920, type: 3}
   NAgents: 2
   width: 20
