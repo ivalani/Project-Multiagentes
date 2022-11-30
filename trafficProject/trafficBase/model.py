@@ -54,11 +54,9 @@ class RandomModel(Model):
 
         self.num_agents = 3
         self.running = True
-        #positions_temp = [(2,0),(0,22),(21,0)]
-        positions_temp = [(0,22)]
+        positions_temp = [(2,0),(0,22),(21,0)]
         pedPositions = [(2,2),(20,2),(2,22),(20,22),(11,10)]
-        #destinys_temp = [(6,4),(1,15),(22,5)]
-        destinys_temp = [(1,15)]
+        destinys_temp = [(6,4),(1,15),(22,5)]
 
         for i in range(len(positions_temp)):
             a = Car(i+1000, self, destinys_temp[i], positions_temp[i])

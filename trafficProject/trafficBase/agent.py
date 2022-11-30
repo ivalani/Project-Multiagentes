@@ -35,7 +35,6 @@ class Car(Agent):
         elif self.direction == "Left":
             next_move = (self.pos[0] - 1, self.pos[1])
         elif self.direction == "Right":
-            print(self.myDestiny[0])
             next_move = (self.pos[0] + 1, self.pos[1])
         elif self.direction == "Intersection" and self.pos == self.destiny:
             print("exito")
@@ -107,12 +106,9 @@ class Car(Agent):
                     print(self.myDestiny)
                 return
             else:
-
-                print("Se guardo:")
                 if self.direction == "Intersection":
                     print(y,x)
                     self.myDestiny.insert(0, (y,x))
-
                 print("Mi ruta se mantuvo como:")
                 print(self.myDestiny)
                 self.moving = False
@@ -129,8 +125,9 @@ class Car(Agent):
                     print(self.lastNode)
                 return
             else:
-
-                self.myDestiny.insert(0, (y,x))
+                if self.direction == "Intersection":
+                    print(y,x)
+                    self.myDestiny.insert(0, (y,x))
                 print("Mi ruta se mantuvo como:")
                 print(self.myDestiny)
                 self.moving = False
@@ -146,8 +143,9 @@ class Car(Agent):
                     print(self.lastNode)
                 return
             else:
-
-                self.myDestiny.insert(0, (y,x))
+                if self.direction == "Intersection":
+                    print(y,x)
+                    self.myDestiny.insert(0, (y,x))
                 print("Mi ruta se mantuvo como:")
                 print(self.myDestiny)
                 self.moving = False
