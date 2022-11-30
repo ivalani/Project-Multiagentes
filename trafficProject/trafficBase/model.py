@@ -109,7 +109,7 @@ class RandomModel(Model):
                         counter = 0
                     last_node = (i,j)
                 # Weight is counted when the direction is the same and there is no obstacle.
-                elif matrix[i][j] == '>' or matrix[i][j] == 'Z' or matrix[i][j] == 's':
+                elif matrix[i][j] == '>' or matrix[i][j] == 'Z' or matrix[i][j] == 's' or matrix[i][j] == 'S':
                     counter += 1
                 else:
                     # All other cases are discarded.
@@ -136,7 +136,7 @@ class RandomModel(Model):
                         edges_list.append((last_node, (y,x), counter))
                         counter = 0
                     last_node = (y,x)
-                elif matrix2[i][j] == 'v' or matrix2[i][j] == 'S' or matrix2[i][j] == 'Z':
+                elif matrix2[i][j] == 'v' or matrix2[i][j] == 'S' or matrix2[i][j] == 'Z' or matrix2[i][j] == 's':
                     counter += 1
                 else:
                     counter = 0
@@ -164,7 +164,7 @@ class RandomModel(Model):
                         edges_list.append((last_node, (x,y), counter))
                         counter = 0
                     last_node = (x,y)
-                elif matrix3[i][j] == '<' or matrix3[i][j] == 'Z' or matrix3[i][j] == 's':
+                elif matrix3[i][j] == '<' or matrix3[i][j] == 'Z' or matrix3[i][j] == 's' or matrix3[i][j] == 'S':
                     counter += 1
                 else:
                     counter = 0
