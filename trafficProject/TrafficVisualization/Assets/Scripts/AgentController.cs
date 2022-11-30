@@ -102,34 +102,11 @@ public class AgentController : MonoBehaviour
 
                 cars[agent.Key].transform.localPosition = interpolated;
                 if(direction != Vector3.zero) cars[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
-
+                
             }
             // float t = (timer / timeToUpdate);
             // dt = t * t * ( 3f - 2f*t);
         }
-        /*
-        if (updated)
-        {
-            Debug.Log("this is working");
-            timer -= Time.deltaTime;
-            dt = 1.0f - (timer / timeToUpdate);
-
-            foreach(var agent in currPositions)
-            {
-                Vector3 currentPosition = agent.Value;
-                Vector3 previousPosition = prevPositions[agent.Key];
-
-                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
-                Vector3 direction = currentPosition - interpolated;
-
-                Debug.Log("this is working");
-                pedestrians[agent.Key].transform.localPosition = interpolated;
-                if(direction != Vector3.zero) pedestrians[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
-
-            }
-            // float t = (timer / timeToUpdate);
-            // dt = t * t * ( 3f - 2f*t);
-        }*/
     }
  
     IEnumerator UpdateSimulation()
