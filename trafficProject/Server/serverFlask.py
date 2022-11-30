@@ -115,7 +115,6 @@ def getTrafficLightState():
             for (contents, x, z) in random_model.grid.coord_iter():
                 for i in contents:
                     if isinstance(i, Traffic_Light):
-                        print(i)
                         trafficLights.append(
                             {
                                 "id": str(i.unique_id),
