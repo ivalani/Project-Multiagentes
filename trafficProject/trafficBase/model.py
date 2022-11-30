@@ -15,6 +15,11 @@ class RandomModel(Model):
         dataDictionary = json.load(open("mapDictionary.json"))
         self.list_of_edges = self.build_edgesList()
         self.traffic_lights = []
+        self.num_agents = 3
+        self.running = True
+        positions_temp = []
+        pedPos_temp = []
+        destinys_temp = [(6,4),(1,15),(22,5),(6,15),(3,18),(3,23),(9,8),(13,4),(19,1),(13,15),(17,14),(17,20),(22,22)]
 
         with open('2022_base.txt') as baseFile:
             lines = baseFile.readlines()
@@ -29,6 +34,7 @@ class RandomModel(Model):
                     if col in ["v", "^", ">", "<", "+"]:
                         agent = Road(f"r_{r*self.width+c}", self, dataDictionary[col])
                         self.grid.place_agent(agent, (c, self.height - r - 1))
+                        positions_temp.append((c, self.height - r - 1))
 
                     elif col in ["S", "s"]:
                         agent = Traffic_Light(f"tl_{r*self.width+c}", self, False if col == "S" else True, int(dataDictionary[col]))
@@ -48,27 +54,23 @@ class RandomModel(Model):
                     elif col == "B":
                         agent = SideWalk(f"sw_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r -1 ))
+                        pedPos_temp.append((c, self.height - r - 1))
 
                     elif col in ["Z", "z"]:
                         agent = PedestrianCrossing(f"pc_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
                         self.schedule.add(agent)
 
-        self.num_agents = 3
-        self.running = True
-        positions_temp = [(2,0),(0,22),(21,0)]
-        pedPositions = [(2,2),(20,2),(2,22),(20,22),(11,10)]
-        destinys_temp = [(6,4),(1,15),(22,5)]
-
-        for i in range(len(positions_temp)):
-            a = Car(i+1000, self, destinys_temp[i])
-            pos = positions_temp[i]
+        for i in range(self.num_agents):
+            destpos = self.random.choice(destinys_temp)
+            a = Car(i+1000, self, destpos)
+            pos = self.random.choice(positions_temp)
             self.schedule.add(a)
             self.grid.place_agent(a, pos)
 
         for i in range(self.num_agents):
             a = Pedestrian(i+2000, self)
-            pos = pedPositions[i]
+            pos = self.random.choice(pedPos_temp)
             self.schedule.add(a)
             self.grid.place_agent(a, pos)
         """

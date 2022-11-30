@@ -66,6 +66,7 @@ class Car(Agent):
             self.myDestiny = shortestPath(self.model.list_of_edges, (y,x), (y2,x2))
             ###############################################################
             # Removes the total weight of the path
+            print(self.myDestiny)
             self.myDestiny = self.myDestiny[1]
             # Removes the first node of the path because it is the current node
             x,y = self.myDestiny.pop(0)
