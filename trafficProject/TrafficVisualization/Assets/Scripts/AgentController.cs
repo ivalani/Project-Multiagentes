@@ -47,7 +47,7 @@ public class AgentController : MonoBehaviour
 
     bool updated = false, started = false;
 
-    public GameObject agentPrefab, obstaclePrefab, floor;
+    public GameObject agentPrefab, floor;
     public int NAgents, width, height;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
@@ -55,7 +55,6 @@ public class AgentController : MonoBehaviour
     void Start()
     {
         agentsData = new AgentsData();
-        obstacleData = new AgentsData();
 
         prevPositions = new Dictionary<string, Vector3>();
         currPositions = new Dictionary<string, Vector3>();
@@ -174,23 +173,4 @@ public class AgentController : MonoBehaviour
         }
     }
 
-    IEnumerator GetObstacleData() 
-    {
-        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getObstaclesEndpoint);
-        yield return www.SendWebRequest();
- 
-        if (www.result != UnityWebRequest.Result.Success)
-            Debug.Log(www.error);
-        else 
-        {
-            obstacleData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
-
-            Debug.Log(obstacleData.positions);
-
-            foreach(AgentData obstacle in obstacleData.positions)
-            {
-                Instantiate(obstaclePrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
-            }
-        }
-    }
 }
