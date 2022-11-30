@@ -109,8 +109,10 @@ class Car(Agent):
             else:
 
                 print("Se guardo:")
-                print(y,x)
-                self.myDestiny.insert(0, (y,x))
+                if self.direction == "Intersection":
+                    print(y,x)
+                    self.myDestiny.insert(0, (y,x))
+
                 print("Mi ruta se mantuvo como:")
                 print(self.myDestiny)
                 self.moving = False
