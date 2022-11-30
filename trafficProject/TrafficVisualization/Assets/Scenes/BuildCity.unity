@@ -445,9 +445,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carPrefab: {fileID: 4874868640202265460, guid: 03b00e92ee24f4f04a66575383f1ab2a, type: 3}
-  obstaclePrefab: {fileID: 0}
   floor: {fileID: 4731023752128632314, guid: cec252abf1530674d855d6c68aa20ba1, type: 3}
   busPrefab: {fileID: 7588163913731783088, guid: 5957c1f7b4abf4c35b38f4e0f7f3f314, type: 3}
+  pedestriansPrefab: {fileID: 5580396240874297898, guid: cc5bd36e73e926447ba935cdf18530a7, type: 3}
   NAgents: 3
   width: 0
   height: 0

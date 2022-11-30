@@ -38,20 +38,20 @@ public class AgentController : MonoBehaviour
     // private string url = "https://agents.us-south.cf.appdomain.cloud/";
     string serverUrl = "http://localhost:8585";
     string getCarsEndpoint = "/getCars";
-    string getObstaclesEndpoint = "/getObstacles";
+    string getPedestriansEndpoint = "/getPedestrians";
     string getBusesEndpoint = "/getBuses";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentsData carsData, obstacleData, busesData;
+    AgentsData carsData, pedestriansData, busesData;
     Dictionary<string, GameObject> cars;
     Dictionary<string, GameObject> buses;
-    Dictionary<string, GameObject> agents;
+    Dictionary<string, GameObject> pedestrians;
 
     Dictionary<string, Vector3> prevPositions, currPositions;
 
     bool updated = false, started = false;
 
-    public GameObject carPrefab, obstaclePrefab, floor, busPrefab;
+    public GameObject carPrefab, floor, busPrefab, pedestriansPrefab;
     public int NAgents, width, height;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
@@ -60,7 +60,7 @@ public class AgentController : MonoBehaviour
     {
         carsData = new AgentsData();
         busesData = new AgentsData();
-        obstacleData = new AgentsData();
+        pedestriansData = new AgentsData();
 
         prevPositions = new Dictionary<string, Vector3>();
         currPositions = new Dictionary<string, Vector3>();
@@ -68,9 +68,7 @@ public class AgentController : MonoBehaviour
 
         cars = new Dictionary<string, GameObject>();
         buses = new Dictionary<string, GameObject>();
-
-        agents = new Dictionary<string, GameObject>();
-
+        pedestrians = new Dictionary<string, GameObject>();
 
         floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
         floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
@@ -109,6 +107,29 @@ public class AgentController : MonoBehaviour
             // float t = (timer / timeToUpdate);
             // dt = t * t * ( 3f - 2f*t);
         }
+        /*
+        if (updated)
+        {
+            Debug.Log("this is working");
+            timer -= Time.deltaTime;
+            dt = 1.0f - (timer / timeToUpdate);
+
+            foreach(var agent in currPositions)
+            {
+                Vector3 currentPosition = agent.Value;
+                Vector3 previousPosition = prevPositions[agent.Key];
+
+                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
+                Vector3 direction = currentPosition - interpolated;
+
+                Debug.Log("this is working");
+                pedestrians[agent.Key].transform.localPosition = interpolated;
+                if(direction != Vector3.zero) pedestrians[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
+
+            }
+            // float t = (timer / timeToUpdate);
+            // dt = t * t * ( 3f - 2f*t);
+        }*/
     }
  
     IEnumerator UpdateSimulation()
@@ -122,6 +143,7 @@ public class AgentController : MonoBehaviour
         {
             StartCoroutine(GetCarsData());
             StartCoroutine(GetBusesData());
+            StartCoroutine(GetPedestriansData());
         }
     }
 
@@ -148,7 +170,7 @@ public class AgentController : MonoBehaviour
             Debug.Log("Getting Agents positions");
             StartCoroutine(GetCarsData());
             StartCoroutine(GetBusesData());
-            StartCoroutine(GetObstacleData());
+            StartCoroutine(GetPedestriansData());
         }
     }
 
@@ -222,23 +244,39 @@ public class AgentController : MonoBehaviour
         }
     }
 
-    IEnumerator GetObstacleData() 
+    IEnumerator GetPedestriansData() 
     {
-        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getObstaclesEndpoint);
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getPedestriansEndpoint);
+
         yield return www.SendWebRequest();
  
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
         else 
         {
-            obstacleData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
+            pedestriansData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
 
-            Debug.Log(obstacleData.positions);
-
-            foreach(AgentData obstacle in obstacleData.positions)
+            foreach(AgentData agent in pedestriansData.positions)
             {
-                Instantiate(obstaclePrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
+                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+
+                    if(!started)
+                    {
+                        prevPositions[agent.id] = newAgentPosition;
+                        pedestrians[agent.id] = Instantiate(pedestriansPrefab, newAgentPosition, Quaternion.identity);
+                    }
+                    else
+                    {
+                        Vector3 currentPosition = new Vector3();
+                        if(currPositions.TryGetValue(agent.id, out currentPosition))
+                            prevPositions[agent.id] = currentPosition;
+                        currPositions[agent.id] = newAgentPosition;
+                    }
             }
+
+            updated = true;
+            if(!started) started = true;
         }
     }
+
 }
