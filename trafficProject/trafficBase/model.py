@@ -137,7 +137,7 @@ class RandomModel(Model):
             last_node = None
             y = 24
             for j in range(len(matrix2[i])):
-                if matrix2[i][j] == '+' and ("v" in matrix2[i][j:-1] or "v" in matrix2[i][j-3:j]):
+                if matrix2[i][j] == '+' and ("v" in matrix2[i][j:j+3] or "v" in matrix2[i][j-3:j]):
                     if last_node != None:
                         edges_list.append((last_node, (y,x), counter))
                         counter = 0
@@ -193,7 +193,7 @@ class RandomModel(Model):
             last_node = None
             y = 0
             for j in range(len(matrix4[i])):
-                if matrix4[i][j] == '+' and ("^" in matrix4[i][j:-1] or "^" in matrix4[i][j-3:j]):
+                if matrix4[i][j] == '+' and ("^" in matrix4[i][j:j+3] or "^" in matrix4[i][j-3:j]):
                     if last_node != None:
                         edges_list.append((last_node, (y,x), counter))
                         counter = 0
