@@ -15,11 +15,12 @@ class RandomModel(Model):
         dataDictionary = json.load(open("mapDictionary.json"))
         self.list_of_edges = self.build_edgesList()
         self.traffic_lights = []
-        self.num_agents = 3
+        self.num_agents = 10
+
         self.running = True
         positions_temp = []
         pedPos_temp = []
-        destinys_temp = [(1,15),(3,18),(3,23),(6,4),(6,15),(9,8),(13,4),(13,14),(13,20),(17,14),(17,20),(19,1),(22,5),(22,22)]
+        destinys_temp = [(1,15),(3,18),(3,23),(6,4),(6,15),(9,8),(13,4),(13,20),(17,14),(17,20),(19,1),(22,5),(22,22)]
 
         with open('2022_base.txt') as baseFile:
             lines = baseFile.readlines()
@@ -34,7 +35,8 @@ class RandomModel(Model):
                     if col in ["v", "^", ">", "<", "+"]:
                         agent = Road(f"r_{r*self.width+c}", self, dataDictionary[col])
                         self.grid.place_agent(agent, (c, self.height - r - 1))
-                        positions_temp.append((c, self.height - r - 1))
+                        if col in ["v", "^", ">", "<"]:
+                            positions_temp.append((c, self.height - r - 1))
 
                     elif col in ["S", "s"]:
                         agent = Traffic_Light(f"tl_{r*self.width+c}", self, False if col == "S" else True, int(dataDictionary[col]))
@@ -65,6 +67,8 @@ class RandomModel(Model):
             destpos = self.random.choice(destinys_temp)
             a = Car(i+1000, self, destpos)
             pos = self.random.choice(positions_temp)
+            while isinstance(self.grid.get_cell_list_contents(pos)[-1], Car):
+                pos = self.random.choice(positions_temp)
             self.schedule.add(a)
             self.grid.place_agent(a, pos)
 
