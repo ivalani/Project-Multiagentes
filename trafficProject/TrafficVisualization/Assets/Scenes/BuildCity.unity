@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657838, g: 0.49641234, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -331,7 +331,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layout: {fileID: 4900000, guid: 3bfd3d79c9613734eb50947472dc789b, type: 3}
-  roadPrefab: {fileID: 4731023752128632314, guid: cec252abf1530674d855d6c68aa20ba1, type: 3}
+  roadPrefab: {fileID: 6246606598057307937, guid: cec252abf1530674d855d6c68aa20ba1, type: 3}
   destinationPrefab: {fileID: 1954359764678167289, guid: 315e52c44da1ec845aa2a34289ec5eab, type: 3}
   buildingPrefab: {fileID: 5788411017124981246, guid: cc29fa96267ada14fa70eb967b2534a2, type: 3}
   trafficLightPrefab: {fileID: 1801081640747017710, guid: 68ebce290aaf28d46b50e111043b9e1d, type: 3}
