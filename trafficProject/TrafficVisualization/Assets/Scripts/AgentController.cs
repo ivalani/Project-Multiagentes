@@ -227,7 +227,7 @@ public class AgentController : MonoBehaviour
 
     IEnumerator GetPedestriansData()
     {
-       UnityWebRequest www = UnityWebRequest.Get(serverUrl + getPedestriansEndpoint);
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getPedestriansEndpoint);
 
         yield return www.SendWebRequest();
  
