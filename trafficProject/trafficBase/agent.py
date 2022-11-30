@@ -50,36 +50,24 @@ class Car(Agent):
             self.myDestiny = shortestPath(self.model.list_of_edges, (y,x), (y2,x2))
             self.myDestiny = self.myDestiny[1]
             idontneedit = self.myDestiny.pop(0)
-            print("Removed start point")
-            print(idontneedit)
             x,y = self.myDestiny.pop(0)
             next_move = (y,x)
-            print("Actualmente en:")
         elif self.direction == "Intersection":
             y,x = self.myDestiny.pop(0)
-            print("Referencia de destino:")
-            print(x,y)
             x2,y2 = self.pos
-            print("Posicion previa:")
-            print(x2,y2)
             self.lastNode = (x,y)
             # undefinded
             if x > x2:
-                print("Vamos a derecha")
                 next_move = ((x2+1),y2)
             # undefined
             elif x < x2:
-                print("Vamos a izquierda")
                 next_move = ((x2-1),y2)
             # Goes down to destination
             elif y < y2:
-                print("Vamos a abajo")
                 next_move = (x2,(y2-1))
             # Goes up to destination
             elif y > y2:
-                print("Vamos a arriba")
                 next_move = (x2,(y2+1))
-            print("Actualmente en:")
         else:
             next_move = self.pos
 
@@ -89,65 +77,44 @@ class Car(Agent):
 
         if agentsFront == []:
             self.model.grid.move_agent(self, next_move)
-            print(next_move)
             self.moving = True
             return
         elif isinstance(agentsFront[0], Traffic_Light) or isinstance(agentsFront[-1], Traffic_Light):
             agentsFront = [agent for agent in agentsFront if isinstance(agent, Traffic_Light)]
             if agentsFront[0].state == True:
-                print(next_move)
                 self.model.grid.move_agent(self, next_move)
                 self.moving = True
                 if self.direction == "Intersection":
                     self.lastNode = (y,x)
-                    print("Last node")
-                    print(self.lastNode)
-                    print("Mi ruta se mantuvo como:")
-                    print(self.myDestiny)
                 return
             else:
                 if self.direction == "Intersection":
-                    print(y,x)
                     self.myDestiny.insert(0, (y,x))
-                print("Mi ruta se mantuvo como:")
-                print(self.myDestiny)
                 self.moving = False
                 return
         elif isinstance(agentsFront[0], PedestrianCrossing) or isinstance(agentsFront[-1], PedestrianCrossing):
             agentsFront = [agent for agent in agentsFront if isinstance(agent, PedestrianCrossing)]
             if agentsFront[0].state == False:
                 self.model.grid.move_agent(self, next_move)
-                print(next_move)
                 self.moving = True
                 if self.direction == "Intersection":
                     self.lastNode = (y,x)
-                    print("Last node")
-                    print(self.lastNode)
                 return
             else:
                 if self.direction == "Intersection":
-                    print(y,x)
                     self.myDestiny.insert(0, (y,x))
-                print("Mi ruta se mantuvo como:")
-                print(self.myDestiny)
                 self.moving = False
                 return
         elif isinstance(agentsFront, Car) or isinstance(agentsFront, Bus):
             if agentsFront[0].moving == True:
                 self.model.grid.move_agent(self, next_move)
                 self.moving = True
-                print(next_move)
                 if self.direction == "Intersection":
                     self.lastNode = (y,x)
-                    print("Last node")
-                    print(self.lastNode)
                 return
             else:
                 if self.direction == "Intersection":
-                    print(y,x)
                     self.myDestiny.insert(0, (y,x))
-                print("Mi ruta se mantuvo como:")
-                print(self.myDestiny)
                 self.moving = False
                 return
 
@@ -164,12 +131,10 @@ class Car(Agent):
         elif self.direction == "Intersection" and self.myDestiny != []:
             y,x = self.lastNode
             x2,y2 = self.pos
-            print(x,y)
-            print(x2,y2)
-            # undefinded
+            # Goes right to destination
             if x > x2:
                 self.direction = "Right"
-            # undefined
+            # Goes left to destination
             elif x < x2:
                 self.direction = "Left"
             # Goes down to destination
@@ -181,7 +146,6 @@ class Car(Agent):
         else:
             self.direction = self.direction
         self.move()
-        print(self.moving)
         print("-------------------------------------")
 
 class Pedestrian(Agent):
