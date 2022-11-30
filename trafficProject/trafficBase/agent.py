@@ -2,6 +2,8 @@ from mesa import Agent
 from Graph import *
 import collections
 
+# Moving Agents
+
 class Car(Agent):
     """
     Agent that moves randomly.
@@ -14,24 +16,29 @@ class Car(Agent):
         lastNode: Last node of the graph that the agent visited
     """
     def __init__(self, unique_id, model, destiny):
+        """
+        Creates a new random agent.
+        Args:
+            unique_id: The agent's ID
+            model: Model reference for the agent
+            destiny: Coordinates of the destination
+        """
         self.unique_id = unique_id
         self.direction = None
         self.destiny = destiny
         self.moving = False
         self.myDestiny = None
         self.lastNode = None
-        """
-        Creates a new random agent.
-        Args:
-            unique_id: The agent's ID
-            model: Model reference for the agent
-        """
         super().__init__(unique_id, model)
 
     def move(self):
         """
-        Determines if the agent can move in the direction that was chosen
+        Determines if the agent can move in the direction that was chosen.
+        First it interprets the direction, and translates it to a coordinate in next_move.
+        Second it checks if the next position is a valid position to move to (No other agents, red lights, pedestrians).
+        Third it moves the agent to the next position.
         """
+        # Interpretation of the direction into coordinates
         if self.direction == "Up":
             next_move = (self.pos[0], self.pos[1] + 1)
         elif self.direction == "Down":
@@ -40,119 +47,146 @@ class Car(Agent):
             next_move = (self.pos[0] - 1, self.pos[1])
         elif self.direction == "Right":
             next_move = (self.pos[0] + 1, self.pos[1])
+        # If the agent is in an intersection and reached destiny, it will enter the destination and then stop.
         elif self.direction == "Intersection" and self.pos == self.destiny:
+            # Gets the coordinates of the destination and enters it
             whereIsDestination = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
             thereItIs = [agent for agent in whereIsDestination if isinstance(agent, Destination)]
             next_move = thereItIs[0].pos
             self.model.grid.move_agent(self, next_move)
             self.model.schedule.remove(self)
             return
+        # If the agent enters for first time of simulation into an intersection it will get its destiny path and moves to the first node.
         elif self.direction == "Intersection" and self.myDestiny == None:
-            # Borrar cuando se corrigan las coordenadas del graafo
+            # Gets the path to follow and stores it in myDestiny
+            ###############################################################
+            # Borrar cuando se corrigan las coordenadas del grafo
             x,y = self.pos
             x2,y2 = self.destiny
             self.myDestiny = shortestPath(self.model.list_of_edges, (y,x), (y2,x2))
             ###############################################################
+            # Removes the total weight of the path
             self.myDestiny = self.myDestiny[1]
+            # Removes the first node of the path because it is the current node
             x,y = self.myDestiny.pop(0)
+            # Gets the coordinates of the next node
             x,y = self.myDestiny.pop(0)
             next_move = (y,x)
+        # If agent is in an intersection it will move based on the coords of the next node in path
         elif self.direction == "Intersection":
+            # Interpretation of the next node into movement of the agent
             y,x = self.myDestiny.pop(0)
             x2,y2 = self.pos
             self.lastNode = (x,y)
-            # Goes right to destination
+            # Right
             if x > x2:
                 next_move = ((x2+1),y2)
-            # Goes left to destination
+            # Left
             elif x < x2:
                 next_move = ((x2-1),y2)
-            # Goes down to destination
+            # Down
             elif y < y2:
                 next_move = (x2,(y2-1))
-            # Goes up to destination
+            # Up
             elif y > y2:
                 next_move = (x2,(y2+1))
-        else:
-            next_move = self.pos
 
-
+        # Gets the agents in the next move that are not a road
         whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
         agentsFront = [agent for agent in whatIsFront if not isinstance(agent, Road)]
 
+        # If there is no agent in the next move, it will move
         if agentsFront == []:
             self.model.grid.move_agent(self, next_move)
             self.moving = True
             return
+        # If there is an Traffic_Light in the next move, it will check if it is green
         elif isinstance(agentsFront[0], Traffic_Light) or isinstance(agentsFront[-1], Traffic_Light):
             agentsFront = [agent for agent in agentsFront if isinstance(agent, Traffic_Light)]
             if agentsFront[0].state == True:
+                # Moves
                 self.model.grid.move_agent(self, next_move)
                 self.moving = True
+                # Saves the last node visited
                 if self.direction == "Intersection":
                     self.lastNode = (y,x)
                 return
             else:
+                # Stops
+                self.moving = False
+                # Adds the last node visited to the path so it can continue from there next step
                 if self.direction == "Intersection":
                     self.myDestiny.insert(0, (y,x))
-                self.moving = False
                 return
+        # If there is an PedestrianCrossing in the next move, it will check if there is an pedestrian crossing.
         elif isinstance(agentsFront[0], PedestrianCrossing) or isinstance(agentsFront[-1], PedestrianCrossing):
             agentsFront = [agent for agent in agentsFront if isinstance(agent, PedestrianCrossing)]
-            if agentsFront[0].state == False:
+            if agentsFront[0].state == None or agentsFront[0].state == "Car":
+                # Moves
                 self.model.grid.move_agent(self, next_move)
                 self.moving = True
+                # Saves the last node visited
                 if self.direction == "Intersection":
                     self.lastNode = (y,x)
                 return
             else:
+                # Stops
+                self.moving = False
+                # Adds the last node visited to the path so it can continue from there next step
                 if self.direction == "Intersection":
                     self.myDestiny.insert(0, (y,x))
-                self.moving = False
                 return
+        # Checks if there is a stoped car or bus.
         elif isinstance(agentsFront, Car) or isinstance(agentsFront, Bus):
             if agentsFront[0].moving == True:
+                # Moves
                 self.model.grid.move_agent(self, next_move)
                 self.moving = True
+                # Saves the last node visited
                 if self.direction == "Intersection":
                     self.lastNode = (y,x)
                 return
             else:
+                # Stops
+                self.moving = False
+                # Adds the last node visited to the path so it can continue from there next step
                 if self.direction == "Intersection":
                     self.myDestiny.insert(0, (y,x))
-                self.moving = False
                 return
-
-
 
     def step(self):
         """
         Determines the new direction it will take, and then moves
         """
+        # Gets the direction of current road
         currentIn = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=0)
         RoadDirection = [agent for agent in currentIn if isinstance(agent, Road)]
+        # Saves the direction of the road
         if RoadDirection != []:
             self.direction = RoadDirection[0].direction
+        # When the agent is in an intersection, it will get the relative direction of the next node
         elif self.direction == "Intersection" and self.myDestiny != []:
             y,x = self.lastNode
             x2,y2 = self.pos
-            # Goes right to destination
+            # Right
             if x > x2:
                 self.direction = "Right"
-            # Goes left to destination
+            # Left
             elif x < x2:
                 self.direction = "Left"
-            # Goes down to destination
+            # Down
             elif y < y2:
                 self.direction = "Down"
-            # Goes up to destination
+            # Up
             elif y > y2:
                 self.direction = "Up"
+        # In case the agent is over a traffic light or pedestrian crossing, it will keep its last direction
         else:
             self.direction = self.direction
         self.move()
         print("-------------------------------------")
 
+# Not done
 class Pedestrian(Agent):
     """
     Pedestrian agent.
@@ -168,13 +202,18 @@ class Pedestrian(Agent):
 
     def move(self):
         posibleSteps = self.model.grid.get_neighbors(self.pos, moore=False, include_center=False, radius=1)
-        isPedestrianViable = [agent.pos for agent in posibleSteps if isinstance(agent, PedestrianCrossing) or isinstance(agent, SideWalk) or isinstance(agent, Destination) or isinstance(agent, Traffic_Light)]
+        isPedestrianViable = [agent.pos for agent in posibleSteps if isinstance(agent, PedestrianCrossing) or isinstance(agent, SideWalk) or isinstance(agent, Destination)  or isinstance(agent, Traffic_Light)]
         next_move = self.random.choice(isPedestrianViable)
+        whereIsDestination = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
+        isDestination = [agent for agent in whereIsDestination if isinstance(agent, Destination)]
         self.model.grid.move_agent(self, next_move)
+        if isDestination != []:
+            self.model.schedule.remove(self)
 
     def step(self):
         self.move()
 
+# Not done
 class Bus(Agent):
     """
     Bus agent.
@@ -268,6 +307,8 @@ class Bus(Agent):
         self.move()
         print("-------------------------------------")
 
+# Reactive agents, but not moving
+
 class Traffic_Light(Agent):
     """
     Traffic light. Where the traffic lights are in the grid.
@@ -293,21 +334,65 @@ class Traffic_Light(Agent):
         #     self.state = not self.state
         pass
 
+class PedestrianCrossing(Agent):
+    """
+    Pedestrian crossing agent. Determines where a pedestrian can cross the street
+    """
+    def __init__(self, unique_id, model):
+        """
+        Creates a new pedestrian crossing,
+        Args:
+            unique id: agent's ID
+            model: model reference
+        """
+        super().__init__(unique_id, model)
+        self.state = None
+
+    def step(self):
+        # Checks if a pedestrian or car is over it.
+        AgentOverIt = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=0)
+        if isinstance(AgentOverIt[0], Car) or isinstance(AgentOverIt[0], Bus):
+            self.state = "Car"
+        elif isinstance(AgentOverIt[0], Pedestrian):
+            self.state = "Pedestrian"
+        else:
+            self.state = None
+
 class Destination(Agent):
     """
     Destination agent. Where each car should go.
     """
     def __init__(self, unique_id, model):
+        """
+        Creates a new destination.,
+        Args:
+            unique id: agent's ID
+            model: model reference
+        """
         super().__init__(unique_id, model)
 
     def step(self):
-        pass
+        # Checks if a car or pedestrian arrived to the destination
+        AgentOverIt = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=0)
+        OverIt = [agent for agent in AgentOverIt if isinstance(agent, Car) or isinstance(agent, Pedestrian)]
+        # Removes the car or pedestrian from the grid
+        if OverIt != []:
+            for _ in OverIt:
+                self.model.grid.remove_agent(_)
+
+# Environment
 
 class Obstacle(Agent):
     """
-    Obstacle agent. Just to add obstacles to the grid.
+    Obstacle agent. Just to add obstacles to the grid. Interpreted as a building in Unity.
     """
     def __init__(self, unique_id, model):
+        """
+        Creates a new building.
+        Args:
+            unique_id: The agent's ID
+            model: Model reference for the agent
+        """
         super().__init__(unique_id, model)
 
     def step(self):
@@ -335,7 +420,6 @@ class SideWalk(Agent):
     """
     Sidewalk agent. Determines where the persons can walk.
     """
-
     def __init__(self, unique_id, model):
         """
         Creates a new sidewalk.
@@ -345,18 +429,5 @@ class SideWalk(Agent):
         """
         super().__init__(unique_id, model)
 
-class PedestrianCrossing(Agent):
-    """
-    Pedestrian crossing agent. Determines where a pedestrian can cross the street
-    """
-
-    def __init__(self, unique_id, model):
-        """
-        Creates a new pedestrian crossing,
-        Args:
-            unique id: agent's ID
-            model: model reference
-        """
-        super().__init__(unique_id, model)
-        self.state = False
-
+    def step(self):
+        pass
