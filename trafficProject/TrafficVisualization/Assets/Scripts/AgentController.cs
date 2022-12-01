@@ -14,13 +14,15 @@ public class AgentData
 {
     public string id;
     public float x, y, z;
+    public bool finished;
 
-    public AgentData(string id, float x, float y, float z)
+    public AgentData(string id, float x, float y, float z, bool finished)
     {
         this.id = id;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.finished = finished;
     }
 }
 
@@ -47,6 +49,7 @@ public class AgentController : MonoBehaviour
     Dictionary<string, GameObject> cars;
     Dictionary<string, GameObject> buses;
     Dictionary<string, GameObject> pedestrians;
+    Dictionary<string, AgentData> carData;
 
     Dictionary<string, Vector3> carPrevPositions, carCurrPositions;
     Dictionary<string, Vector3> busPrevPositions, busCurrPositions;
@@ -74,6 +77,8 @@ public class AgentController : MonoBehaviour
         pedestrianPrevPositions = new Dictionary<string, Vector3>();
         pedestrianCurrPositions = new Dictionary<string, Vector3>();
 
+        carData = new Dictionary<string, AgentData>();
+
         cars = new Dictionary<string, GameObject>();
         buses = new Dictionary<string, GameObject>();
         pedestrians = new Dictionary<string, GameObject>();
@@ -99,7 +104,7 @@ public class AgentController : MonoBehaviour
 
             foreach(var agent in carCurrPositions)
             {
-                Debug.Log(agent);
+                Debug.Log(carData[agent.Key].finished);
                 Vector3 currentPosition = agent.Value;
                 Vector3 previousPosition = carPrevPositions[agent.Key];
 
@@ -108,11 +113,12 @@ public class AgentController : MonoBehaviour
 
                 cars[agent.Key].transform.localPosition = interpolated;
                 if(direction != Vector3.zero) cars[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
+                if (carData[agent.Key].finished) cars[agent.Key].SetActive(false);
                 
             }
             foreach(var agent in pedestrianCurrPositions)
             {
-                Debug.Log(agent);
+                // Debug.Log(agent);
                 Vector3 currentPosition = agent.Value;
                 Vector3 previousPosition = pedestrianPrevPositions[agent.Key];
 
@@ -205,6 +211,7 @@ public class AgentController : MonoBehaviour
                     {
                         carPrevPositions[agent.id] = newAgentPosition;
                         cars[agent.id] = Instantiate(carPrefab, newAgentPosition, Quaternion.identity);
+                        carData[agent.id] = agent;
                     }
                     else
                     {
