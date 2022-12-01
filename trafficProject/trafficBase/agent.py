@@ -16,6 +16,7 @@ class Car(Agent):
         lastNode: Last node of the graph that the agent visited
         lastMove: Last move that the agent did
         lastlastMove: Last last move that the agent did
+        self.inDestiny: Boolean that determines if the agent is in the destiny or not
     """
     def __init__(self, unique_id, model, destiny):
         """
@@ -33,6 +34,7 @@ class Car(Agent):
         self.lastNode = None
         self.lastMove = None
         self.lastlastMove = None
+        self.inDestiny = False
         super().__init__(unique_id, model)
 
     def move(self):
@@ -58,6 +60,7 @@ class Car(Agent):
             thereItIs = [agent for agent in whereIsDestination if isinstance(agent, Destination)]
             next_move = thereItIs[0].pos
             self.model.grid.move_agent(self, next_move)
+            self.inDestiny = True
             self.model.schedule.remove(self)
             return
         # If the agent enters for first time of simulation into an intersection it will get its destiny path and moves to the first node.
@@ -204,16 +207,17 @@ class Car(Agent):
         # In case the agent is over a traffic light or pedestrian crossing, it will keep its last direction
         else:
             self.direction = self.direction
-        print(self.unique_id)
-        print("Meta: ", self.destiny)
-        print("Antes de mover: ")
-        print("lastNode: ", self.lastNode)
-        print("pos", self.pos)
-        print("myDestiny: ", self.myDestiny)
-        print("direction: ", self.direction)
-        print("######### En movimiento #######")
+        # FOR DEBUGGING
+        #print(self.unique_id)
+        #print("Meta: ", self.destiny)
+        #print("Antes de mover: ")
+        #print("lastNode: ", self.lastNode)
+        #print("pos", self.pos)
+        #print("myDestiny: ", self.myDestiny)
+        #print("direction: ", self.direction)
+        #print("######### En movimiento #######")
         self.move()
-        print("-------------------------------")
+        #print("-------------------------------")
 
 class Pedestrian(Agent):
     """
@@ -222,6 +226,7 @@ class Pedestrian(Agent):
         unique_id: Unique identifier of the agent
         model: Model in which the agent is
         visited: List of nodes visited by the agent
+        indestiny: Boolean that indicates if the agent is in its destiny
     """
     def __init__(self, unique_id, model):
         """
@@ -232,10 +237,12 @@ class Pedestrian(Agent):
         """
         super().__init__(unique_id, model)
         self.visited=[]
+        self.indestiny = False
 
     def move(self):
         # Agent arrive to the destination
         if self.pos == None:
+            self.indestiny = True
             self.model.schedule.remove(self)
             return
 
@@ -276,6 +283,7 @@ class Pedestrian(Agent):
                 return
         # In case there is a destiny it goes inside.
         elif isinstance(notAPedestrian, Destination):
+            self.indestiny = True
             self.model.schedule.remove(self)
             self.model.grid.move_agent(self, next_move)
             return
@@ -447,12 +455,13 @@ class Destination(Agent):
 
     def step(self):
         # Checks if a car or pedestrian arrived to the destination
-        AgentOverIt = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=0)
-        OverIt = [agent for agent in AgentOverIt if isinstance(agent, Car) or isinstance(agent, Pedestrian)]
+        #AgentOverIt = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=0)
+        #OverIt = [agent for agent in AgentOverIt if isinstance(agent, Car) or isinstance(agent, Pedestrian)]
         # Removes the car or pedestrian from the grid
-        if OverIt != []:
-            for _ in OverIt:
-                self.model.grid.remove_agent(_)
+        #if OverIt != []:
+        #    for _ in OverIt:
+        #        self.model.grid.remove_agent(_)
+        pass
 
 # Environment
 
