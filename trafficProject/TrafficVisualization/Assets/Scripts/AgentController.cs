@@ -48,12 +48,15 @@ public class AgentController : MonoBehaviour
     Dictionary<string, GameObject> buses;
     Dictionary<string, GameObject> pedestrians;
 
-    Dictionary<string, Vector3> prevPositions, currPositions;
+    Dictionary<string, Vector3> carPrevPositions, carCurrPositions;
+    Dictionary<string, Vector3> busPrevPositions, busCurrPositions;
+    Dictionary<string, Vector3> pedestrianPrevPositions, pedestrianCurrPositions;
+
 
     bool updated = false, started = false;
 
-    public GameObject carPrefab, floor, busPrefab, pedestriansPrefab, trafficPrefab;
-    public int NAgents, width, height;
+    public GameObject carPrefab, busPrefab, pedestriansPrefab;
+    public int NumberCars, NumberPedestrians, NumberBuses;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
 
@@ -64,16 +67,16 @@ public class AgentController : MonoBehaviour
         pedestriansData = new AgentsData();
         trafficData = new AgentsData();
 
-        prevPositions = new Dictionary<string, Vector3>();
-        currPositions = new Dictionary<string, Vector3>();
-
+        carPrevPositions = new Dictionary<string, Vector3>();
+        carCurrPositions = new Dictionary<string, Vector3>();
+        busPrevPositions = new Dictionary<string, Vector3>();
+        busCurrPositions = new Dictionary<string, Vector3>();
+        pedestrianPrevPositions = new Dictionary<string, Vector3>();
+        pedestrianCurrPositions = new Dictionary<string, Vector3>();
 
         cars = new Dictionary<string, GameObject>();
         buses = new Dictionary<string, GameObject>();
         pedestrians = new Dictionary<string, GameObject>();
-
-        floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
-        floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
         
         timer = timeToUpdate;
 
@@ -94,10 +97,11 @@ public class AgentController : MonoBehaviour
             timer -= Time.deltaTime;
             dt = 1.0f - (timer / timeToUpdate);
 
-            foreach(var agent in currPositions)
+            foreach(var agent in carCurrPositions)
             {
+                Debug.Log(agent);
                 Vector3 currentPosition = agent.Value;
-                Vector3 previousPosition = prevPositions[agent.Key];
+                Vector3 previousPosition = carPrevPositions[agent.Key];
 
                 Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
                 Vector3 direction = currentPosition - interpolated;
@@ -106,6 +110,34 @@ public class AgentController : MonoBehaviour
                 if(direction != Vector3.zero) cars[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
                 
             }
+            foreach(var agent in pedestrianCurrPositions)
+            {
+                Debug.Log(agent);
+                Vector3 currentPosition = agent.Value;
+                Vector3 previousPosition = pedestrianPrevPositions[agent.Key];
+
+                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
+                Vector3 direction = currentPosition - interpolated;
+
+                pedestrians[agent.Key].transform.localPosition = interpolated;
+                if(direction != Vector3.zero) pedestrians[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
+                
+            }
+            foreach(var agent in busCurrPositions)
+            {
+                Debug.Log(agent);
+                Vector3 currentPosition = agent.Value;
+                Vector3 previousPosition = busPrevPositions[agent.Key];
+
+                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
+                Vector3 direction = currentPosition - interpolated;
+
+                buses[agent.Key].transform.localPosition = interpolated;
+                if(direction != Vector3.zero) buses[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
+                
+            }
+
+            
             // float t = (timer / timeToUpdate);
             // dt = t * t * ( 3f - 2f*t);
         }
@@ -121,7 +153,7 @@ public class AgentController : MonoBehaviour
         else 
         {
             StartCoroutine(GetCarsData());
-            StartCoroutine(GetBusesData());
+            // StartCoroutine(GetBusesData());
             StartCoroutine(GetPedestriansData());
         }
     }
@@ -130,9 +162,9 @@ public class AgentController : MonoBehaviour
     {
         WWWForm form = new WWWForm();
 
-        form.AddField("NAgents", NAgents.ToString());
-        form.AddField("width", width.ToString());
-        form.AddField("height", height.ToString());
+        form.AddField("NumberCars", NumberCars.ToString());
+        form.AddField("NumberPedestrians", NumberPedestrians.ToString());
+        form.AddField("NumberBuses", NumberPedestrians.ToString());
 
         UnityWebRequest www = UnityWebRequest.Post(serverUrl + sendConfigEndpoint, form);
         www.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -148,9 +180,8 @@ public class AgentController : MonoBehaviour
             Debug.Log("Configuration upload complete!");
             Debug.Log("Getting Agents positions");
             StartCoroutine(GetCarsData());
-            StartCoroutine(GetBusesData());
+            // StartCoroutine(GetBusesData());
             StartCoroutine(GetPedestriansData());
-            StartCoroutine(GetTrafficLightData());
         }
     }
 
@@ -168,24 +199,23 @@ public class AgentController : MonoBehaviour
 
             foreach(AgentData agent in carsData.positions)
             {
-                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                Vector3 newAgentPosition = new Vector3(agent.x, 0.2f, agent.z);
 
                     if(!started)
                     {
-                        prevPositions[agent.id] = newAgentPosition;
+                        carPrevPositions[agent.id] = newAgentPosition;
                         cars[agent.id] = Instantiate(carPrefab, newAgentPosition, Quaternion.identity);
                     }
                     else
                     {
                         Vector3 currentPosition = new Vector3();
-                        if(currPositions.TryGetValue(agent.id, out currentPosition))
-                            prevPositions[agent.id] = currentPosition;
-                        currPositions[agent.id] = newAgentPosition;
+                        if(carCurrPositions.TryGetValue(agent.id, out currentPosition))
+                            carPrevPositions[agent.id] = currentPosition;
+                        carCurrPositions[agent.id] = newAgentPosition;
                     }
             }
 
-            updated = true;
-            if(!started) started = true;
+
         }
     }
 
@@ -207,20 +237,17 @@ public class AgentController : MonoBehaviour
 
                     if(!started)
                     {
-                        prevPositions[agent.id] = newAgentPosition;
+                        busPrevPositions[agent.id] = newAgentPosition;
                         buses[agent.id] = Instantiate(busPrefab, newAgentPosition, Quaternion.identity);
                     }
                     else
                     {
                         Vector3 currentPosition = new Vector3();
-                        if(currPositions.TryGetValue(agent.id, out currentPosition))
-                            prevPositions[agent.id] = currentPosition;
-                        currPositions[agent.id] = newAgentPosition;
+                        if(busCurrPositions.TryGetValue(agent.id, out currentPosition))
+                            busPrevPositions[agent.id] = currentPosition;
+                        busCurrPositions[agent.id] = newAgentPosition;
                     }
             }
-
-            updated = true;
-            if(!started) started = true;
         }
     }
 
@@ -238,19 +265,19 @@ public class AgentController : MonoBehaviour
 
             foreach(AgentData agent in pedestriansData.positions)
             {
-                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                Vector3 newAgentPosition = new Vector3(agent.x, 0.2f, agent.z);
 
                     if(!started)
                     {
-                        prevPositions[agent.id] = newAgentPosition;
+                        pedestrianPrevPositions[agent.id] = newAgentPosition;
                         pedestrians[agent.id] = Instantiate(pedestriansPrefab, newAgentPosition, Quaternion.identity);
                     }
                     else
                     {
                         Vector3 currentPosition = new Vector3();
-                        if(currPositions.TryGetValue(agent.id, out currentPosition))
-                            prevPositions[agent.id] = currentPosition;
-                        currPositions[agent.id] = newAgentPosition;
+                        if(pedestrianCurrPositions.TryGetValue(agent.id, out currentPosition))
+                            pedestrianPrevPositions[agent.id] = currentPosition;
+                        pedestrianCurrPositions[agent.id] = newAgentPosition;
                     }
             }
 
@@ -270,10 +297,10 @@ public class AgentController : MonoBehaviour
         {
             trafficData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
 
-            foreach(AgentData obstacle in trafficData.positions)
-            {
-                Instantiate(trafficPrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
-            }
+            // foreach(AgentData obstacle in trafficData.positions)
+            // {
+            //     Instantiate(trafficPrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
+            // }
         }
     }
 
