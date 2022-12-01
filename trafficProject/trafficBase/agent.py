@@ -53,7 +53,7 @@ class Car(Agent):
             next_move = (self.pos[0] + 1, self.pos[1])
         # If the agent is in an intersection and reached destiny, it will enter the destination and then stop.
         elif self.pos == self.destiny:
-            # Gets the coordinates of the destination and enters it
+            # Gets the coordinates of the destination and enters to it
             whereIsDestination = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
             thereItIs = [agent for agent in whereIsDestination if isinstance(agent, Destination)]
             next_move = thereItIs[0].pos
@@ -63,12 +63,9 @@ class Car(Agent):
         # If the agent enters for first time of simulation into an intersection it will get its destiny path and moves to the first node.
         elif self.direction == "Intersection" and self.myDestiny == None:
             # Gets the path to follow and stores it in myDestiny
-            ###############################################################
-            # Borrar cuando se corrigan las coordenadas del grafo
             x,y = self.pos
             x2,y2 = self.destiny
             self.myDestiny = shortestPath(self.model.list_of_edges, (y,x), (y2,x2))
-            ###############################################################
             # Removes the total weight of the path
             self.myDestiny = self.myDestiny[1]
             # Removes the first node of the path because it is the current node
@@ -87,7 +84,7 @@ class Car(Agent):
                 self.myDestiny = None
                 self.model.grid.move_agent(self, next_move)
                 return
-            # Interpretation of the next node into movement of the agent
+            # Interpretation of the coords of the next node into movement of the agent
             y,x = self.myDestiny.pop(0)
             x2,y2 = self.pos
             self.lastNode = (x,y)
@@ -107,7 +104,7 @@ class Car(Agent):
             elif y > y2:
                 next_move = (x2,(y2+1))
 
-        # Gets the agents in the next move that are not a road
+        # Gets the agents in the next move and that are not a road
         whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
         agentsFront = [agent for agent in whatIsFront if not isinstance(agent, Road)]
         self.lastlastMove = self.lastMove
@@ -218,10 +215,13 @@ class Car(Agent):
         self.move()
         print("-------------------------------")
 
-# Not done
 class Pedestrian(Agent):
     """
     Pedestrian agent.
+    Atributes:
+        unique_id: Unique identifier of the agent
+        model: Model in which the agent is
+        visited: List of nodes visited by the agent
     """
     def __init__(self, unique_id, model):
         """
@@ -234,24 +234,31 @@ class Pedestrian(Agent):
         self.visited=[]
 
     def move(self):
+        # Agent arrive to the destination
         if self.pos == None:
             self.model.schedule.remove(self)
             return
 
+        # Gets the possible next moves Only in sidewalks, pedestrian crossings and below traffic lights.
         posibleSteps = self.model.grid.get_neighbors(self.pos, moore=False, include_center=False, radius=1)
         isPedestrianViable = [agent.pos for agent in posibleSteps if isinstance(agent, PedestrianCrossing) or isinstance(agent, SideWalk) or isinstance(agent, Destination)  or isinstance(agent, Traffic_Light)]
+
+        # It would be better to have a pathfinding algorithm here, but for now it will just move randomly
         next_move = self.random.choice(isPedestrianViable)
         isPedestrianViable.remove(next_move)
 
+        # Checks if the next move has already been visited. In case all visited, it moves random.
         while next_move in self.visited and isPedestrianViable != []:
             next_move = self.random.choice(isPedestrianViable)
             isPedestrianViable.remove(next_move)
 
         self.visited.append(next_move)
 
+        # Checks what is in the next move.
         whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
         notAPedestrian = [agent for agent in whatIsFront if not isinstance(agent, Pedestrian) or not isinstance(agent, Car)]
 
+        # In case there is a traffic light, it will check if it is red for cars and cross.
         if isinstance(notAPedestrian[0], Traffic_Light):
             if notAPedestrian[0].state == False:
                 self.model.grid.move_agent(self, next_move)
@@ -259,6 +266,7 @@ class Pedestrian(Agent):
             else:
                 self.visited.remove(next_move)
                 return
+        # In case there is a pedestrian crossing, it will check if there are no cars.
         elif isinstance(notAPedestrian[0], PedestrianCrossing):
             if notAPedestrian[0].state == None or notAPedestrian[0].state == "Pedestrian":
                 self.model.grid.move_agent(self, next_move)
@@ -266,10 +274,12 @@ class Pedestrian(Agent):
             else:
                 self.visited.remove(next_move)
                 return
+        # In case there is a destiny it goes inside.
         elif isinstance(notAPedestrian, Destination):
             self.model.schedule.remove(self)
             self.model.grid.move_agent(self, next_move)
             return
+        # Moves in sidewalk.
         else:
             self.model.grid.move_agent(self, next_move)
             return
