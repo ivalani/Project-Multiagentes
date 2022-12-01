@@ -30,6 +30,8 @@ class Car(Agent):
         self.myDestiny = None
         self.lastNode = None
         self.theway = None
+        self.lastMove = None
+        self.lastlastMove = None
         super().__init__(unique_id, model)
 
     def move(self):
@@ -78,27 +80,20 @@ class Car(Agent):
         # If agent is in an intersection it will move based on the coords of the next node in path
         elif self.direction == "Intersection":
             # Interpretation of the next node into movement of the agent
-            if self.myDestiny == []:
-                x2,y2 = self.pos
-                if (y2,x2) not in self.theway:
-                    print("oli")
-                    x2,y2 = self.lastNode
-                x3,y3 = self.destiny
-                self.myDestiny = shortestPath(self.model.list_of_edges, (y2,x2), (y3,x3))
-                
-                self.myDestiny = shortestPath(self.model.list_of_edges, (y2,x2), (y3,x3))
-                print("Nuevo camino: ", self.myDestiny)
-                self.myDestiny = self.myDestiny[1]
-                
-                if len(self.myDestiny) > 1:
-                    y,x = self.myDestiny.pop(0)
-                    
-                
-            
+            if self.myDestiny == [] or self.pos == self.lastlastMove:
+                aroundAgent = self.model.grid.get_neighbors(self.pos, moore=False, include_center=False, radius=1)
+                agentsFront = [agent for agent in aroundAgent if isinstance(agent, Road)]
+                next_move = self.random.choice(agentsFront).pos
+                self.myDestiny = None
+                self.model.grid.move_agent(self, next_move)
+                return
+
             y,x = self.myDestiny.pop(0)
+            print("Camino after pop: ", self.myDestiny)
             x2,y2 = self.pos
             print("Destiny pop: ", x,y)
             self.lastNode = (x,y)
+
             if (x,y) == (x2,y2):
                 y,x = self.myDestiny.pop(0)
             # Right
@@ -113,17 +108,16 @@ class Car(Agent):
             # Up
             elif y > y2:
                 next_move = (x2,(y2+1))
-            else :
-                print("El camino es igual")
 
-        print("next_move: ", next_move)
         # Gets the agents in the next move that are not a road
         whatIsFront = self.model.grid.get_neighbors(next_move, moore=False, include_center=True, radius=0)
         agentsFront = [agent for agent in whatIsFront if not isinstance(agent, Road)]
-
+        self.lastlastMove = self.lastMove
+        self.lastMove = next_move
         # If there is no agent in the next move, it will move
         if agentsFront == []:
             self.model.grid.move_agent(self, next_move)
+            self.lastMove = next_move
             self.moving = True
             return
         # If there is an Traffic_Light in the next move, it will check if it is green
@@ -141,6 +135,7 @@ class Car(Agent):
             else:
                 # Stops
                 self.moving = False
+                self.lastMove = self.lastlastMove
                 # Adds the last node visited to the path so it can continue from there next step
                 if self.direction == "Intersection":
                     self.myDestiny.insert(0, (y,x))
@@ -160,6 +155,7 @@ class Car(Agent):
             else:
                 # Stops
                 self.moving = False
+                self.lastMove = self.lastlastMove
                 # Adds the last node visited to the path so it can continue from there next step
                 if self.direction == "Intersection":
                     self.myDestiny.insert(0, (y,x))
@@ -178,6 +174,7 @@ class Car(Agent):
             else:
                 # Stops
                 self.moving = False
+                self.lastMove = self.lastlastMove
                 # Adds the last node visited to the path so it can continue from there next step
                 if self.direction == "Intersection":
                     self.myDestiny.insert(0, (y,x))
@@ -218,7 +215,7 @@ class Car(Agent):
         print("lastNode: ", self.lastNode)
         print("pos", self.pos)
         print("myDestiny: ", self.myDestiny)
-            
+        print("direction: ", self.direction)
         print("######### En movimiento #######")
         self.move()
         print("-------------------------------")

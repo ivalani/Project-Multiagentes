@@ -15,7 +15,7 @@ class RandomModel(Model):
         dataDictionary = json.load(open("mapDictionary.json"))
         self.list_of_edges = self.build_edgesList()
         self.traffic_lights = []
-        self.num_agents = 10
+        self.num_agents = 50
 
         self.running = True
         positions_temp = []
