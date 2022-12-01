@@ -21,4 +21,4 @@ def shortestPath(edges, source, sink):
                 if neighbour not in visited:
                     heapq.heappush(queue, (cost+c, neighbour, path))
 
-    return float("inf")
+    return (0, [source])
