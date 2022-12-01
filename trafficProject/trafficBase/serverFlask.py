@@ -46,7 +46,7 @@ def getCar():
                             "x": x,
                             "y": 1,
                             "z": z,
-                            "Finished": i.inDestiny,
+                            "finished": i.inDestiny,
                         })
     
             cprint("Cars positions received!", "green")
