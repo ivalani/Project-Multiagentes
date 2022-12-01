@@ -14,6 +14,8 @@ class Car(Agent):
         moving: Boolean that determines if the agent is moving or not
         myDestiny: List of coordinates that the agent will follow to reach the destiny
         lastNode: Last node of the graph that the agent visited
+        lastMove: Last move that the agent did
+        lastlastMove: Last last move that the agent did
     """
     def __init__(self, unique_id, model, destiny):
         """
@@ -29,7 +31,6 @@ class Car(Agent):
         self.moving = False
         self.myDestiny = None
         self.lastNode = None
-        self.theway = None
         self.lastMove = None
         self.lastlastMove = None
         super().__init__(unique_id, model)
@@ -73,13 +74,12 @@ class Car(Agent):
             # Removes the first node of the path because it is the current node
             if len(self.myDestiny) > 1:
                 x,y = self.myDestiny.pop(0)
-            self.theway = self.myDestiny
             # Gets the coordinates of the next node
             x,y = self.myDestiny.pop(0)
             next_move = (y,x)
         # If agent is in an intersection it will move based on the coords of the next node in path
         elif self.direction == "Intersection":
-            # Interpretation of the next node into movement of the agent
+            # Exceptiom for accidental consuption of myDestiny
             if self.myDestiny == [] or self.pos == self.lastlastMove:
                 aroundAgent = self.model.grid.get_neighbors(self.pos, moore=False, include_center=False, radius=1)
                 agentsFront = [agent for agent in aroundAgent if isinstance(agent, Road)]
@@ -87,11 +87,9 @@ class Car(Agent):
                 self.myDestiny = None
                 self.model.grid.move_agent(self, next_move)
                 return
-
+            # Interpretation of the next node into movement of the agent
             y,x = self.myDestiny.pop(0)
-            print("Camino after pop: ", self.myDestiny)
             x2,y2 = self.pos
-            print("Destiny pop: ", x,y)
             self.lastNode = (x,y)
 
             if (x,y) == (x2,y2):
