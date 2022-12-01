@@ -38,7 +38,7 @@ def getCar():
     carPositions = []
     if request.method == "GET":
         try:
-            for(contents, x, z) in random_model.grid.coord_iter():
+            for (contents, x, z) in random_model.grid.coord_iter():
                 for i in contents:
                     if isinstance(i, Car):
                         carPositions.append({
@@ -48,7 +48,7 @@ def getCar():
                             "z": z,
                             "finished": i.inDestiny,
                         })
-    
+
             cprint("Cars positions received!", "green")
             return jsonify({"positions": carPositions})
         except:
@@ -79,7 +79,8 @@ def getBus():
             cprint("Failed to receive buses position!", "red")
             return jsonify({"message": "Failed to get buses positions!"})
 
-@app.route('/getPedestrians', methods = ["GET"])
+
+@app.route('/getPedestrians', methods=["GET"])
 def getPedestrians():
     global random_model
 
@@ -103,7 +104,8 @@ def getPedestrians():
             cprint("Failed to get pedestrians positions", "red")
             return jsonify({"message": "Failed get pedestrians positions"})
 
-@app.route("/trafficLightState", methods = ["GET"])
+
+@app.route("/trafficLightState", methods=["GET"])
 def getTrafficLightState():
     global random_model
 
@@ -127,7 +129,8 @@ def getTrafficLightState():
         except:
             cprint("Failed to get traffic lights state!", "red")
             return jsonify({"message": "Failed to get traffic lights state"})
-            
+
+
 @app.route("/update", methods=["GET"])
 def updateModel():
     global current_step, random_model
