@@ -40,9 +40,10 @@ public class AgentController : MonoBehaviour
     string getCarsEndpoint = "/getCars";
     string getPedestriansEndpoint = "/getPedestrians";
     string getBusesEndpoint = "/getBuses";
+    string getTrafficLightsEndpoint = "/trafficLightState";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentsData carsData, pedestriansData, busesData;
+    AgentsData carsData, pedestriansData, busesData, trafficData;
     Dictionary<string, GameObject> cars;
     Dictionary<string, GameObject> buses;
     Dictionary<string, GameObject> pedestrians;
@@ -51,7 +52,7 @@ public class AgentController : MonoBehaviour
 
     bool updated = false, started = false;
 
-    public GameObject carPrefab, floor, busPrefab, pedestriansPrefab;
+    public GameObject carPrefab, floor, busPrefab, pedestriansPrefab, trafficPrefab;
     public int NAgents, width, height;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
@@ -61,6 +62,7 @@ public class AgentController : MonoBehaviour
         carsData = new AgentsData();
         busesData = new AgentsData();
         pedestriansData = new AgentsData();
+        trafficData = new AgentsData();
 
         prevPositions = new Dictionary<string, Vector3>();
         currPositions = new Dictionary<string, Vector3>();
@@ -148,6 +150,7 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetCarsData());
             StartCoroutine(GetBusesData());
             StartCoroutine(GetPedestriansData());
+            StartCoroutine(GetTrafficLightData());
         }
     }
 
@@ -255,5 +258,24 @@ public class AgentController : MonoBehaviour
             if(!started) started = true;
         }
     }
+
+    IEnumerator GetTrafficLightData() 
+    {
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getTrafficLightsEndpoint);
+        yield return www.SendWebRequest();
+ 
+        if (www.result != UnityWebRequest.Result.Success)
+            Debug.Log(www.error);
+        else 
+        {
+            trafficData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
+
+            foreach(AgentData obstacle in trafficData.positions)
+            {
+                Instantiate(trafficPrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
+            }
+        }
+    }
+
 
 }
