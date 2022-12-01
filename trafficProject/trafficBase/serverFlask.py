@@ -46,6 +46,7 @@ def getCar():
                             "x": x,
                             "y": 1,
                             "z": z,
+                            "Finished": i.inDestiny,
                         })
     
             cprint("Cars positions received!", "green")
@@ -94,6 +95,7 @@ def getPedestrians():
                             "x": x,
                             "y": 1,
                             "z": z,
+                            "finished": i.indestiny,
                         })
             cprint("Pedestrians positions received!", "green")
             return jsonify({"positions": pedestrianPosition})
