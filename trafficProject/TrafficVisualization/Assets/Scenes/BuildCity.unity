@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657838, g: 0.49641234, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -346,7 +346,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1457529882}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -445,13 +445,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carPrefab: {fileID: 4874868640202265460, guid: 03b00e92ee24f4f04a66575383f1ab2a, type: 3}
-  floor: {fileID: 919132149155446097, guid: fa0cf1e9405f74249905636fd00c30ee, type: 3}
   busPrefab: {fileID: 7588163913731783088, guid: 5957c1f7b4abf4c35b38f4e0f7f3f314, type: 3}
   pedestriansPrefab: {fileID: 5580396240874297898, guid: cc5bd36e73e926447ba935cdf18530a7, type: 3}
-  trafficPrefab: {fileID: 919132149155446097, guid: 893dcdb0cc65ec540b3342b57d059581, type: 3}
-  NAgents: 3
-  width: 0
-  height: 0
+  NumberCars: 0
+  NumberPedestrians: 0
+  NumberBuses: 0
   timeToUpdate: 0.5
 --- !u!4 &1606569643
 Transform:
