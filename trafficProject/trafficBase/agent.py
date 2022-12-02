@@ -395,7 +395,7 @@ class Traffic_Light(Agent):
     """
     Traffic light. Where the traffic lights are in the grid.
     """
-    def __init__(self, unique_id, model, state = False, timeToChange = 10):
+    def __init__(self, unique_id, model, state = False,timeToChange = 10):
         super().__init__(unique_id, model)
         """
         Creates a new Traffic light.
@@ -406,15 +406,23 @@ class Traffic_Light(Agent):
             timeToChange: After how many step should the traffic light change color
         """
         self.state = state
+        #self.status = False if on == 1 else True
         self.timeToChange = timeToChange
 
     def step(self):
         """
         To change the state (green or red) of the traffic light in case you consider the time to change of each traffic light.
         """
+       # self.timeToChange = timeToChange + 1
+
         # if self.model.schedule.steps % self.timeToChange == 0:
         #     self.state = not self.state
         pass
+    #def getStatusColor(self):
+       #if self.status:
+            #return "green"
+        #else:
+            #return "red"
 
 class PedestrianCrossing(Agent):
     """

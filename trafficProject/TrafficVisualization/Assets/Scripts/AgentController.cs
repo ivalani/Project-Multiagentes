@@ -35,6 +35,22 @@ public class AgentsData
     public AgentsData() => this.positions = new List<AgentData>();
 }
 
+[Serializable]
+public class LightData
+{
+    public string id;
+    public bool status;
+    public int x;
+    public int y;
+    public int z;
+}
+
+[Serializable]
+public class TrafficLightsData
+{
+    public List<LightData> positions;
+}
+
 public class AgentController : MonoBehaviour
 {
     // private string url = "https://agents.us-south.cf.appdomain.cloud/";
@@ -45,7 +61,10 @@ public class AgentController : MonoBehaviour
     string getTrafficLightsEndpoint = "/trafficLightState";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentsData carsData, pedestriansData, busesData, trafficData;
+
+    AgentsData carsData, pedestriansData, busesData;//trafficData
+    TrafficLightsData trafficLightsData;
+
     Dictionary<string, GameObject> cars;
     Dictionary<string, GameObject> buses;
     Dictionary<string, GameObject> pedestrians;
@@ -55,8 +74,12 @@ public class AgentController : MonoBehaviour
     Dictionary<string, Vector3> busPrevPositions, busCurrPositions;
     Dictionary<string, Vector3> pedestrianPrevPositions, pedestrianCurrPositions;
 
+    Dictionary<string, GameObject> trafficLights;
+    Dictionary<string, bool> trafficLightStatus;
 
     bool updated = false, started = false;
+
+    public GameObject trafficLightPrefab;
 
     public GameObject carPrefab, busPrefab, pedestriansPrefab;
     public int NumberCars, NumberPedestrians, NumberBuses;
@@ -68,7 +91,10 @@ public class AgentController : MonoBehaviour
         carsData = new AgentsData();
         busesData = new AgentsData();
         pedestriansData = new AgentsData();
-        trafficData = new AgentsData();
+
+        trafficLightsData = new TrafficLightsData();
+        trafficLights = new Dictionary<string, GameObject>();
+        trafficLightStatus = new Dictionary<string, bool>();
 
         carPrevPositions = new Dictionary<string, Vector3>();
         carCurrPositions = new Dictionary<string, Vector3>();
@@ -161,6 +187,7 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetCarsData());
             // StartCoroutine(GetBusesData());
             StartCoroutine(GetPedestriansData());
+            StartCoroutine(GetTrafficLightData());
         }
     }
 
@@ -188,6 +215,7 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetCarsData());
             // StartCoroutine(GetBusesData());
             StartCoroutine(GetPedestriansData());
+            StartCoroutine(GetTrafficLightData());
         }
     }
 
@@ -302,7 +330,26 @@ public class AgentController : MonoBehaviour
             Debug.Log(www.error);
         else 
         {
-            trafficData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
+            trafficLightsData = JsonUtility.FromJson<TrafficLightsData>(www.downloadHandler.text);
+
+            trafficLightStatus.Clear();
+
+            foreach(LightData lightData in trafficLightsData.positions)
+            {
+                if(trafficLights.Count < trafficLightsData.positions.Count)
+                {
+                    GameObject lightOb = Instantiate(trafficLightPrefab, new Vector3(lightData.x, lightData.y, lightData.z), Quaternion.identity);
+
+                    lightOb.transform.parent = transform;
+
+                    trafficLights.Add(lightData.id, lightOb);
+                }
+                trafficLightStatus.Add(lightData.id, lightData.status);
+                if(lightData.status == true)
+                {
+                    trafficLights[lightData.id].SetActive(false);
+                }
+            }
 
             // foreach(AgentData obstacle in trafficData.positions)
             // {
