@@ -41,13 +41,15 @@ def getCar():
             for (contents, x, z) in random_model.grid.coord_iter():
                 for i in contents:
                     if isinstance(i, Car):
-                        carPositions.append({
-                            "id": str(i.unique_id),
-                            "x": x,
-                            "y": 1,
-                            "z": z,
-                            "finished": i.inDestiny,
-                        })
+                        carPositions.append(
+                            {
+                                "id": str(i.unique_id),
+                                "x": x,
+                                "y": 1,
+                                "z": z,
+                                "finished": i.inDestiny,
+                            }
+                        )
 
             cprint("Cars positions received!", "green")
             return jsonify({"positions": carPositions})
@@ -66,12 +68,9 @@ def getBus():
             for (contents, x, z) in random_model.grid.coord_iter():
                 for i in contents:
                     if isinstance(i, Bus):
-                        busPosition.append({
-                            "id": str(i.unique_id),
-                            "x": x,
-                            "y": 1,
-                            "z": z
-                        })
+                        busPosition.append(
+                            {"id": str(i.unique_id), "x": x, "y": 1, "z": z}
+                        )
 
             cprint("Buses positions received!", "green")
             return jsonify({"positions": busPosition})
@@ -80,7 +79,7 @@ def getBus():
             return jsonify({"message": "Failed to get buses positions!"})
 
 
-@app.route('/getPedestrians', methods=["GET"])
+@app.route("/getPedestrians", methods=["GET"])
 def getPedestrians():
     global random_model
 
@@ -91,13 +90,15 @@ def getPedestrians():
             for (contents, x, z) in random_model.grid.coord_iter():
                 for i in contents:
                     if isinstance(i, Pedestrian):
-                        pedestrianPosition.append({
-                            "id": str(i.unique_id),
-                            "x": x,
-                            "y": 1,
-                            "z": z,
-                            "finished": i.indestiny,
-                        })
+                        pedestrianPosition.append(
+                            {
+                                "id": str(i.unique_id),
+                                "x": x,
+                                "y": 1,
+                                "z": z,
+                                "finished": i.indestiny,
+                            }
+                        )
             cprint("Pedestrians positions received!", "green")
             return jsonify({"positions": pedestrianPosition})
         except:
@@ -116,17 +117,18 @@ def getTrafficLightState():
             for (contents, x, z) in random_model.grid.coord_iter():
                 for i in contents:
                     if isinstance(i, Traffic_Light):
-                        print(i)
-                        trafficLights.append({
-                            "id": str(i.unique_id),
-                            "x": x,
-                            "y": 1,
-                            "z": z,
-                            "state": i.state,
-                            "horizontal": i.horizontal,
-                            "vertical": i.vertical,
-                        })
-            cprint("Traffic lights state received!")
+                        trafficLights.append(
+                            {
+                                "id": str(i.unique_id),
+                                "x": x,
+                                "y": 1,
+                                "z": z,
+                                "state": i.state,
+                                "horizontal": i.horizontal,
+                                "vertical": i.vertical,
+                            }
+                        )
+            cprint("Traffic lights state received!", "green")
             return jsonify({"positions": trafficLights})
         except:
             cprint("Failed to get traffic lights state!", "red")

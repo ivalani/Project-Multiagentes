@@ -35,30 +35,60 @@ public class AgentsData
     public AgentsData() => this.positions = new List<AgentData>();
 }
 
+[Serializable]
+public class TrafficLightData
+{
+    public string id;
+    public float x,y,z;
+    public bool state;
+    public bool vertical;
+    public bool horizontal;
+
+    public TrafficLightData(string id, float x, float y, float z,bool state, bool vertical, bool horizontal)
+    {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.state = state;
+        this.vertical = vertical;
+        this.horizontal = horizontal;
+    }
+}
+
+[Serializable]
+public class TrafficLightsData
+{
+    public List<TrafficLightData> positions;
+    public TrafficLightsData() => this.positions = new List<TrafficLightData>();
+}
+
+
 public class AgentController : MonoBehaviour
 {
     // private string url = "https://agents.us-south.cf.appdomain.cloud/";
     string serverUrl = "http://localhost:8585";
     string getCarsEndpoint = "/getCars";
     string getPedestriansEndpoint = "/getPedestrians";
-    string getBusesEndpoint = "/getBuses";
     string getTrafficLightsEndpoint = "/trafficLightState";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentsData carsData, pedestriansData, busesData, trafficData;
+    AgentsData carsData, pedestriansData;
+    TrafficLightsData trafficLightData;
     Dictionary<string, GameObject> cars;
     Dictionary<string, GameObject> buses;
     Dictionary<string, GameObject> pedestrians;
+    Dictionary<string, TrafficLightData> lightData;
     Dictionary<string, AgentData> carData;
 
     Dictionary<string, Vector3> carPrevPositions, carCurrPositions;
-    Dictionary<string, Vector3> busPrevPositions, busCurrPositions;
     Dictionary<string, Vector3> pedestrianPrevPositions, pedestrianCurrPositions;
+    Dictionary<string, Vector3> lightsPositions;
 
 
     bool updated = false, started = false;
 
-    public GameObject carPrefab, busPrefab, pedestriansPrefab;
+    public GameObject carPrefab, pedestriansPrefab, trafficLightPrefab;
     public int NumberCars, NumberPedestrians, NumberBuses;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
@@ -66,16 +96,15 @@ public class AgentController : MonoBehaviour
     void Start()
     {
         carsData = new AgentsData();
-        busesData = new AgentsData();
         pedestriansData = new AgentsData();
-        trafficData = new AgentsData();
+        trafficLightData = new TrafficLightsData();
 
         carPrevPositions = new Dictionary<string, Vector3>();
         carCurrPositions = new Dictionary<string, Vector3>();
-        busPrevPositions = new Dictionary<string, Vector3>();
-        busCurrPositions = new Dictionary<string, Vector3>();
         pedestrianPrevPositions = new Dictionary<string, Vector3>();
         pedestrianCurrPositions = new Dictionary<string, Vector3>();
+
+        lightsPositions = new Dictionary<string, Vector3>();
 
         carData = new Dictionary<string, AgentData>();
 
@@ -104,7 +133,6 @@ public class AgentController : MonoBehaviour
 
             foreach(var agent in carCurrPositions)
             {
-                Debug.Log(carData[agent.Key].finished);
                 Vector3 currentPosition = agent.Value;
                 Vector3 previousPosition = carPrevPositions[agent.Key];
 
@@ -129,21 +157,10 @@ public class AgentController : MonoBehaviour
                 if(direction != Vector3.zero) pedestrians[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
                 
             }
-            foreach(var agent in busCurrPositions)
+            foreach(var agent in lightsPositions)
             {
-                Debug.Log(agent);
-                Vector3 currentPosition = agent.Value;
-                Vector3 previousPosition = busPrevPositions[agent.Key];
-
-                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
-                Vector3 direction = currentPosition - interpolated;
-
-                buses[agent.Key].transform.localPosition = interpolated;
-                if(direction != Vector3.zero) buses[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
-                
+                Debug.Log(agent.Key);
             }
-
-            
             // float t = (timer / timeToUpdate);
             // dt = t * t * ( 3f - 2f*t);
         }
@@ -188,6 +205,7 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetCarsData());
             // StartCoroutine(GetBusesData());
             StartCoroutine(GetPedestriansData());
+            StartCoroutine(GetTrafficLightData());
         }
     }
 
@@ -226,38 +244,6 @@ public class AgentController : MonoBehaviour
         }
     }
 
-    IEnumerator GetBusesData() 
-    {
-        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getBusesEndpoint);
-
-        yield return www.SendWebRequest();
- 
-        if (www.result != UnityWebRequest.Result.Success)
-            Debug.Log(www.error);
-        else 
-        {
-            busesData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
-
-            foreach(AgentData agent in busesData.positions)
-            {
-                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
-
-                    if(!started)
-                    {
-                        busPrevPositions[agent.id] = newAgentPosition;
-                        buses[agent.id] = Instantiate(busPrefab, newAgentPosition, Quaternion.identity);
-                    }
-                    else
-                    {
-                        Vector3 currentPosition = new Vector3();
-                        if(busCurrPositions.TryGetValue(agent.id, out currentPosition))
-                            busPrevPositions[agent.id] = currentPosition;
-                        busCurrPositions[agent.id] = newAgentPosition;
-                    }
-            }
-        }
-    }
-
     IEnumerator GetPedestriansData() 
     {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getPedestriansEndpoint);
@@ -288,8 +274,6 @@ public class AgentController : MonoBehaviour
                     }
             }
 
-            updated = true;
-            if(!started) started = true;
         }
     }
 
@@ -302,12 +286,16 @@ public class AgentController : MonoBehaviour
             Debug.Log(www.error);
         else 
         {
-            trafficData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
+            trafficLightData = JsonUtility.FromJson<TrafficLightsData>(www.downloadHandler.text);
 
-            // foreach(AgentData obstacle in trafficData.positions)
-            // {
-            //     Instantiate(trafficPrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
-            // }
+            foreach(TrafficLightData obstacle in trafficLightData.positions)
+            {
+                Instantiate(trafficLightPrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
+                lightsPositions[obstacle.id] = new Vector3(obstacle.x, obstacle.y, obstacle.z);
+            }
+
+            updated = true;
+            if(!started) started = true;
         }
     }
 
