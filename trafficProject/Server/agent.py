@@ -483,6 +483,23 @@ class Obstacle(Agent):
     def step(self):
         pass
 
+
+class Angel(Agent):
+    """
+    Angel agent (obstacle). Just to add obstacles to the grid. Interpreted as a traffic circle in Unity (angel of independence).
+    """
+    def __init__(self, unique_id, model):
+        """
+        Creates a new Roundabout.
+        Args:
+            unique_id: The agent's ID
+            model: Model reference for the agent
+        """
+        super().__init__(unique_id, model)
+
+    def step(self):
+        pass
+
 class Road(Agent):
     """
     Road agent. Determines where the cars can move, and in which direction.

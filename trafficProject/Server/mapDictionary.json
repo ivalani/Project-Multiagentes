@@ -10,7 +10,7 @@
     "B" : "Sidewalk",
     "Z" : "Pedestrian",
     "z" : "Pedestrian",
-    "+" : "Intersection"
-
+    "+" : "Intersection",
+    "A" : "Angel"
 
 }

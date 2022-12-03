@@ -8,6 +8,9 @@ public class CityMaker : MonoBehaviour
     [SerializeField] GameObject roadPrefab;
     [SerializeField] GameObject destinationPrefab;
     [SerializeField] GameObject buildingPrefab;
+
+    [SerializeField] GameObject angelPrefab;
+
     [SerializeField] GameObject trafficLightPrefab;
     [SerializeField] GameObject sideWalkPrefab;
     [SerializeField] GameObject pedestrianCrossing;
@@ -87,6 +90,14 @@ public class CityMaker : MonoBehaviour
                 // Creates building
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(buildingPrefab, position, Quaternion.identity);
+                tile.transform.localScale = new Vector3(0.5f, Random.Range(0.5f, 2.0f), 0.5f);
+                tile.transform.parent = transform;
+                x += 1;
+            }
+            else if (tiles[i] == 'A') {
+                // Creates a Roundabout (angel)
+                position = new Vector3(x * tileSize, 0, y * tileSize);
+                tile = Instantiate(angelPrefab, position, Quaternion.identity);
                 tile.transform.localScale = new Vector3(0.5f, Random.Range(0.5f, 2.0f), 0.5f);
                 tile.transform.parent = transform;
                 x += 1;
