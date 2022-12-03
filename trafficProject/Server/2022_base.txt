@@ -7,8 +7,8 @@ vvBDBBBBBBBBBvvB^^B##B^^
 ++Z+<<++s<<<<++B^^B##B^^
 ++Z<<<++s<<<<++B^^B##B^^
 vvBBBBSSBBBBBZZBZZB##B^^
-v+D##D+^B###D+vB^^B##B^^
-vvB##B^^B###BvvB^+D##B^^
+v+D##D+^B###BvvB^^B##B^^
+vvB##B^^B###D+vB^+D##B^^
 SSBBBB^^BBBBBvvB^^BBBB^^
 ++s<<<++<<<<<++<++<<<<++
 ++s<<<++<<<<<++<++<<<<++

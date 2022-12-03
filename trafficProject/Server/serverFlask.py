@@ -47,6 +47,7 @@ def getCar():
                                 "x": x,
                                 "y": 1,
                                 "z": z,
+                                "finished": i.inDestiny,
                             }
                         )
 
@@ -95,6 +96,7 @@ def getPedestrians():
                                 "x": x,
                                 "y": 1,
                                 "z": z,
+                                "finished": i.indestiny,
                             }
                         )
             cprint("Pedestrians positions received!", "green")
@@ -122,6 +124,8 @@ def getTrafficLightState():
                                 "y": 1,
                                 "z": z,
                                 "state": i.state,
+                                "horizontal": i.horizontal,
+                                "vertical": i.vertical,
                             }
                         )
             cprint("Traffic lights state received!", "green")

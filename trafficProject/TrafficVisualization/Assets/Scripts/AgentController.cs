@@ -14,20 +14,19 @@ public class AgentData
 {
     public string id;
     public float x, y, z;
-    public bool state;
+    public bool finished;
 
-    public AgentData(string id, float x, float y, float z, bool state)
+    public AgentData(string id, float x, float y, float z, bool finished)
     {
         this.id = id;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.state = state;
+        this.finished = finished;
     }
 }
 
 [Serializable]
-
 public class AgentsData
 {
     public List<AgentData> positions;
@@ -35,48 +34,85 @@ public class AgentsData
     public AgentsData() => this.positions = new List<AgentData>();
 }
 
+[Serializable]
+public class TrafficLightData
+{
+    public string id;
+    public float x,y,z;
+    public bool state;
+    public bool vertical;
+    public bool horizontal;
+
+    public TrafficLightData(string id, float x, float y, float z,bool state, bool vertical, bool horizontal)
+    {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.state = state;
+        this.vertical = vertical;
+        this.horizontal = horizontal;
+    }
+}
+
+[Serializable]
+public class TrafficLightsData
+{
+    public List<TrafficLightData> positions;
+    public TrafficLightsData() => this.positions = new List<TrafficLightData>();
+}
+
+
 public class AgentController : MonoBehaviour
 {
     // private string url = "https://agents.us-south.cf.appdomain.cloud/";
     string serverUrl = "http://localhost:8585";
     string getCarsEndpoint = "/getCars";
-    string getBusesEndpoint = "/getBuses";
     string getPedestriansEndpoint = "/getPedestrians";
     string getTrafficLightsEndpoint = "/trafficLightState";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    AgentsData carsData, busesData, pedestriansData, trafficLightsData;
+    AgentsData carsData, pedestriansData;
+    TrafficLightsData trafficLightData;
     Dictionary<string, GameObject> cars;
     Dictionary<string, GameObject> buses;
     Dictionary<string, GameObject> pedestrians;
-    Dictionary<string, GameObject> trafficLights;
+    Dictionary<string, GameObject> lights;
+    Dictionary<string, AgentData> carData;
+    Dictionary<string, TrafficLightData> lightState;
 
-    Dictionary<string, Vector3> prevPositions, currPositions;
+    Dictionary<string, Vector3> carPrevPositions, carCurrPositions;
+    Dictionary<string, Vector3> pedestrianPrevPositions, pedestrianCurrPositions;
+    Dictionary<string, Vector3> lightsPositions;
+
 
     bool updated = false, started = false;
 
-    public GameObject carPrefab, floor, busPrefab, pedestrianPrefab, trafficLightPrefab;
-    public int NAgents, width, height;
+    public GameObject carPrefab, pedestriansPrefab, trafficLightPrefab;
+    public int NumberCars, NumberPedestrians, NumberBuses;
     public float timeToUpdate = 5.0f;
     private float timer, dt;
 
     void Start()
     {
         carsData = new AgentsData();
-        busesData = new AgentsData();
         pedestriansData = new AgentsData();
-        trafficLightsData = new AgentsData();
+        trafficLightData = new TrafficLightsData();
 
-        prevPositions = new Dictionary<string, Vector3>();
-        currPositions = new Dictionary<string, Vector3>();
+        carPrevPositions = new Dictionary<string, Vector3>();
+        carCurrPositions = new Dictionary<string, Vector3>();
+        pedestrianPrevPositions = new Dictionary<string, Vector3>();
+        pedestrianCurrPositions = new Dictionary<string, Vector3>();
+
+        lightsPositions = new Dictionary<string, Vector3>();
+        lightState = new Dictionary<string, TrafficLightData>();
+
+        carData = new Dictionary<string, AgentData>();
 
         cars = new Dictionary<string, GameObject>();
         buses = new Dictionary<string, GameObject>();
         pedestrians = new Dictionary<string, GameObject>();
-        trafficLights = new Dictionary<string, GameObject>();
-
-        floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
-        floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
+        lights = new Dictionary<string, GameObject>();
         
         timer = timeToUpdate;
 
@@ -97,17 +133,49 @@ public class AgentController : MonoBehaviour
             timer -= Time.deltaTime;
             dt = 1.0f - (timer / timeToUpdate);
 
-            foreach(var agent in currPositions)
+            foreach(var agent in carCurrPositions)
             {
                 Vector3 currentPosition = agent.Value;
-                Vector3 previousPosition = prevPositions[agent.Key];
+                Vector3 previousPosition = carPrevPositions[agent.Key];
 
                 Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
                 Vector3 direction = currentPosition - interpolated;
 
                 cars[agent.Key].transform.localPosition = interpolated;
                 if(direction != Vector3.zero) cars[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
+                if (carData[agent.Key].finished) cars[agent.Key].SetActive(false);
+                
+            }
+            foreach(var agent in pedestrianCurrPositions)
+            {
+                Vector3 currentPosition = agent.Value;
+                Vector3 previousPosition = pedestrianPrevPositions[agent.Key];
 
+                Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
+                Vector3 direction = currentPosition - interpolated;
+
+                if (pedestrians[agent.Key]) pedestrians[agent.Key].transform.localPosition = interpolated;
+                if(direction != Vector3.zero) pedestrians[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
+                
+            }
+            foreach(var agent in lightsPositions)
+            {
+                var redLight = lights[agent.Key].transform.Find("RedLight").gameObject;
+                var greenLight = lights[agent.Key].transform.Find("GreenLight").gameObject;
+                if (lightState[agent.Key].state == false)
+                {
+                    Debug.Log(agent.Key);
+                    Debug.Log(lightState[agent.Key].state);
+                    greenLight.SetActive(false);
+                    redLight.SetActive(true);
+                }
+                if (lightState[agent.Key].state == true)
+                {    
+                    Debug.Log(agent.Key);
+                    Debug.Log(lightState[agent.Key].state);
+                    greenLight.SetActive(true);
+                    redLight.SetActive(false);
+                }
             }
             // float t = (timer / timeToUpdate);
             // dt = t * t * ( 3f - 2f*t);
@@ -124,7 +192,9 @@ public class AgentController : MonoBehaviour
         else 
         {
             StartCoroutine(GetCarsData());
-            StartCoroutine(GetBusesData());
+            // StartCoroutine(GetBusesData());
+            StartCoroutine(GetPedestriansData());
+            StartCoroutine(GetTrafficLightData());
         }
     }
 
@@ -132,9 +202,9 @@ public class AgentController : MonoBehaviour
     {
         WWWForm form = new WWWForm();
 
-        form.AddField("NAgents", NAgents.ToString());
-        form.AddField("width", width.ToString());
-        form.AddField("height", height.ToString());
+        form.AddField("NumberCars", NumberCars.ToString());
+        form.AddField("NumberPedestrians", NumberPedestrians.ToString());
+        form.AddField("NumberBuses", NumberPedestrians.ToString());
 
         UnityWebRequest www = UnityWebRequest.Post(serverUrl + sendConfigEndpoint, form);
         www.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -150,10 +220,11 @@ public class AgentController : MonoBehaviour
             Debug.Log("Configuration upload complete!");
             Debug.Log("Getting Agents positions");
             StartCoroutine(GetCarsData());
-            StartCoroutine(GetBusesData());
             StartCoroutine(GetPedestriansData());
+            StartCoroutine(GetTrafficLightData());
         }
     }
+
 
     IEnumerator GetCarsData() 
     {
@@ -169,63 +240,26 @@ public class AgentController : MonoBehaviour
 
             foreach(AgentData agent in carsData.positions)
             {
-                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                Vector3 newAgentPosition = new Vector3(agent.x, 0.2f, agent.z);
 
                     if(!started)
                     {
-                        prevPositions[agent.id] = newAgentPosition;
+                        carPrevPositions[agent.id] = newAgentPosition;
                         cars[agent.id] = Instantiate(carPrefab, newAgentPosition, Quaternion.identity);
+                        carData[agent.id] = agent;
                     }
                     else
                     {
                         Vector3 currentPosition = new Vector3();
-                        if(currPositions.TryGetValue(agent.id, out currentPosition))
-                            prevPositions[agent.id] = currentPosition;
-                        currPositions[agent.id] = newAgentPosition;
+                        if(carCurrPositions.TryGetValue(agent.id, out currentPosition))
+                            carPrevPositions[agent.id] = currentPosition;
+                        carCurrPositions[agent.id] = newAgentPosition;
                     }
             }
-
-            updated = true;
-            if(!started) started = true;
         }
     }
 
-    IEnumerator GetBusesData() 
-    {
-        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getBusesEndpoint);
-
-        yield return www.SendWebRequest();
- 
-        if (www.result != UnityWebRequest.Result.Success)
-            Debug.Log(www.error);
-        else 
-        {
-            busesData = JsonUtility.FromJson<AgentsData>(www.downloadHandler.text);
-
-            foreach(AgentData agent in busesData.positions)
-            {
-                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
-
-                    if(!started)
-                    {
-                        prevPositions[agent.id] = newAgentPosition;
-                        buses[agent.id] = Instantiate(busPrefab, newAgentPosition, Quaternion.identity);
-                    }
-                    else
-                    {
-                        Vector3 currentPosition = new Vector3();
-                        if(currPositions.TryGetValue(agent.id, out currentPosition))
-                            prevPositions[agent.id] = currentPosition;
-                        currPositions[agent.id] = newAgentPosition;
-                    }
-            }
-
-            updated = true;
-            if(!started) started = true;
-        }
-    }
-
-    IEnumerator GetPedestriansData()
+    IEnumerator GetPedestriansData() 
     {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + getPedestriansEndpoint);
 
@@ -239,25 +273,52 @@ public class AgentController : MonoBehaviour
 
             foreach(AgentData agent in pedestriansData.positions)
             {
-                Vector3 newAgentPosition = new Vector3(agent.x, agent.y, agent.z);
+                Vector3 newAgentPosition = new Vector3(agent.x, 0.2f, agent.z);
 
                     if(!started)
                     {
-                        prevPositions[agent.id] = newAgentPosition;
-                        pedestrians[agent.id] = Instantiate(pedestrianPrefab, newAgentPosition, Quaternion.identity);
+                        pedestrianPrevPositions[agent.id] = newAgentPosition;
+                        pedestrians[agent.id] = Instantiate(pedestriansPrefab, newAgentPosition, Quaternion.identity);
                     }
                     else
                     {
                         Vector3 currentPosition = new Vector3();
-                        if(currPositions.TryGetValue(agent.id, out currentPosition))
-                            prevPositions[agent.id] = currentPosition;
-                        currPositions[agent.id] = newAgentPosition;
+                        if(pedestrianCurrPositions.TryGetValue(agent.id, out currentPosition))
+                            pedestrianPrevPositions[agent.id] = currentPosition;
+                        pedestrianCurrPositions[agent.id] = newAgentPosition;
                     }
             }
 
+        }
+    }
+
+    IEnumerator GetTrafficLightData() 
+    {
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getTrafficLightsEndpoint);
+        yield return www.SendWebRequest();
+ 
+        if (www.result != UnityWebRequest.Result.Success)
+            Debug.Log(www.error);
+        else 
+        {
+            trafficLightData = JsonUtility.FromJson<TrafficLightsData>(www.downloadHandler.text);
+            foreach(TrafficLightData obstacle in trafficLightData.positions)
+            {
+                if (!started)
+                {
+                    lights[obstacle.id] = Instantiate(trafficLightPrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.Euler(0,-90,0));
+                    lightsPositions[obstacle.id] = new Vector3(obstacle.x, obstacle.y, obstacle.z);
+                    lightState[obstacle.id] = obstacle;
+                }
+                else
+                {
+                    lightState[obstacle.id] = obstacle;
+                }
+            }
             updated = true;
             if(!started) started = true;
-        } 
+        }
     }
-    
+
+
 }

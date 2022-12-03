@@ -15,6 +15,12 @@ class RandomModel(Model):
         dataDictionary = json.load(open("mapDictionary.json"))
         self.list_of_edges = self.build_edgesList()
         self.traffic_lights = []
+        self.num_agents = 30
+
+        self.running = True
+        positions_temp = []
+        pedPos_temp = []
+        destinys_temp = [(1,15),(3,18),(3,23),(6,4),(6,15),(9,8),(13,4),(13,20),(17,14),(17,20),(19,1),(22,5),(22,22)]
 
         with open('2022_base.txt') as baseFile:
             lines = baseFile.readlines()
@@ -29,6 +35,8 @@ class RandomModel(Model):
                     if col in ["v", "^", ">", "<", "+"]:
                         agent = Road(f"r_{r*self.width+c}", self, dataDictionary[col])
                         self.grid.place_agent(agent, (c, self.height - r - 1))
+                        if col in ["v", "^", ">", "<"]:
+                            positions_temp.append((c, self.height - r - 1))
 
                     elif col in ["S", "s"]:
                         agent = Traffic_Light(f"tl_{r*self.width+c}", self, False if col == "S" else True, int(dataDictionary[col]))
@@ -42,39 +50,43 @@ class RandomModel(Model):
 
                     elif col == "D":
                         agent = Destination(f"d_{r*self.width+c}", self)
+                        self.schedule.add(agent)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
 
                     elif col == "B":
                         agent = SideWalk(f"sw_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r -1 ))
+                        pedPos_temp.append((c, self.height - r - 1))
 
                     elif col in ["Z", "z"]:
                         agent = PedestrianCrossing(f"pc_{r*self.width+c}", self)
+                        if col == "Z":
+                            agent.vertical = True
+                        else:
+                            agent.horizontal = True
                         self.grid.place_agent(agent, (c, self.height - r - 1))
-
-        self.num_agents = 3
-        self.running = True
-        positions_temp = [(2,0),(0,22),(21,0)]
-        pedPositions = [(2,2),(20,2),(2,22),(20,22),(11,10)]
-        destinys_temp = [(6,4),(1,16),(21,5)]
+                        self.schedule.add(agent)
 
         for i in range(self.num_agents):
-            a = Car(i+1000, self, destinys_temp[i], positions_temp[i])
-            pos = positions_temp[i]
+            destpos = self.random.choice(destinys_temp)
+            a = Car(i+1000, self, destpos)
+            pos = self.random.choice(positions_temp)
+            while isinstance(self.grid.get_cell_list_contents(pos)[-1], Car):
+                pos = self.random.choice(positions_temp)
             self.schedule.add(a)
             self.grid.place_agent(a, pos)
 
         for i in range(self.num_agents):
             a = Pedestrian(i+2000, self)
-            pos = pedPositions[i]
+            pos = self.random.choice(pedPos_temp)
             self.schedule.add(a)
             self.grid.place_agent(a, pos)
-
+        """
         b = Bus(3000, self)
         pos = 13,12
         self.schedule.add(b)
         self.grid.place_agent(b, pos)
-
+"""
     def build_edgesList(self):
         # Mirror map with x and y start at top right corner.
         matrixInverted = []
@@ -107,7 +119,7 @@ class RandomModel(Model):
                         counter = 0
                     last_node = (i,j)
                 # Weight is counted when the direction is the same and there is no obstacle.
-                elif matrix[i][j] == '>' or matrix[i][j] == 'Z' or matrix[i][j] == 's':
+                elif matrix[i][j] == '>' or matrix[i][j] == 'Z' or matrix[i][j] == 's' or matrix[i][j] == 'S':
                     counter += 1
                 else:
                     # All other cases are discarded.
@@ -129,12 +141,12 @@ class RandomModel(Model):
             last_node = None
             y = 24
             for j in range(len(matrix2[i])):
-                if matrix2[i][j] == '+' and ("v" in matrix2[i][j:-1] or "v" in matrix2[i][j-3:j]):
+                if matrix2[i][j] == '+' and ("v" in matrix2[i][j:j+3] or "v" in matrix2[i][j-3:j]):
                     if last_node != None:
                         edges_list.append((last_node, (y,x), counter))
                         counter = 0
                     last_node = (y,x)
-                elif matrix2[i][j] == 'v' or matrix2[i][j] == 'S' or matrix2[i][j] == 'Z':
+                elif matrix2[i][j] == 'v' or matrix2[i][j] == 'S' or matrix2[i][j] == 'Z' or matrix2[i][j] == 's':
                     counter += 1
                 else:
                     counter = 0
@@ -162,7 +174,7 @@ class RandomModel(Model):
                         edges_list.append((last_node, (x,y), counter))
                         counter = 0
                     last_node = (x,y)
-                elif matrix3[i][j] == '<' or matrix3[i][j] == 'Z' or matrix3[i][j] == 's':
+                elif matrix3[i][j] == '<' or matrix3[i][j] == 'Z' or matrix3[i][j] == 's' or matrix3[i][j] == 'S':
                     counter += 1
                 else:
                     counter = 0
@@ -185,7 +197,7 @@ class RandomModel(Model):
             last_node = None
             y = 0
             for j in range(len(matrix4[i])):
-                if matrix4[i][j] == '+' and ("^" in matrix4[i][j:-1] or "^" in matrix4[i][j-3:j]):
+                if matrix4[i][j] == '+' and ("^" in matrix4[i][j:j+3] or "^" in matrix4[i][j-3:j]):
                     if last_node != None:
                         edges_list.append((last_node, (y,x), counter))
                         counter = 0
