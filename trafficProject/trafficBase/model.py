@@ -60,6 +60,10 @@ class RandomModel(Model):
 
                     elif col in ["Z", "z"]:
                         agent = PedestrianCrossing(f"pc_{r*self.width+c}", self)
+                        if col == "Z":
+                            agent.vertical = True
+                        else:
+                            agent.horizontal = True
                         self.grid.place_agent(agent, (c, self.height - r - 1))
                         self.schedule.add(agent)
 

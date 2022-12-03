@@ -407,6 +407,8 @@ class Traffic_Light(Agent):
         """
         self.state = state
         self.timeToChange = timeToChange
+        self.vertical = False
+        self.horizontal = False
 
     def step(self):
         """
