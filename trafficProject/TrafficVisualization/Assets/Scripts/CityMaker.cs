@@ -63,15 +63,15 @@ public class CityMaker : MonoBehaviour
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(roadPrefab, position, Quaternion.identity);
                 tile.transform.parent = transform;
-                tile = Instantiate(trafficLightPrefab, position, Quaternion.Euler(0,180,0));
-                tile.transform.parent = transform;
+                // tile = Instantiate(trafficLightPrefab, position, Quaternion.Euler(0,180,0));
+                // tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'S') {
                 // Creates trafficLight
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(roadPrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
-                tile = Instantiate(trafficLightPrefab, position, Quaternion.Euler(0, 90, 0));
+                // tile = Instantiate(trafficLightPrefab, position, Quaternion.Euler(0, 90, 0));
                 tile.transform.parent = transform;
                 x += 1;
             } else if (tiles[i] == 'D') {
