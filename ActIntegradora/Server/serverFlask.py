@@ -29,6 +29,7 @@ def initModel():
             boxesDensity = float(request.form.get("BoxesDensity"))
             currentStep = 0
 
+            print(numberAgents, boxesDensity, width, height)
             randomModel = RandomModel(numberAgents, boxesDensity, width, height)
             return jsonify({"message": "Parameters received. Model initiated"})
         except:
@@ -53,9 +54,6 @@ def getRobots():
                             "has_box": i.with_box,
                         }
                     )
-                    if i.with_box:
-                        print("SIUUU")
-        print(robotPositions)
         return jsonify({"positions": robotPositions})
 
 
@@ -84,7 +82,13 @@ def getBoxes():
         for (contents, x, z) in randomModel.grid.coord_iter():
             for i in contents:
                 if isinstance(i, Box):
-                    boxPosition.append({"id": str(i.unique_id), "x": x, "y": 1, "z": z})
+                    boxPosition.append(
+                        {"id": str(i.unique_id), 
+                        "x": x, 
+                        "y": 1, 
+                        "z": z,
+                        "picked": i.pickedUp,
+                        })
         return jsonify({"positions": boxPosition})
 
 
