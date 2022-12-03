@@ -282,7 +282,7 @@ class Pedestrian(Agent):
                 self.visited.remove(next_move)
                 return
         # In case there is a destiny it goes inside.
-        elif isinstance(notAPedestrian, Destination):
+        elif isinstance(notAPedestrian[0], Destination):
             self.indestiny = True
             self.model.schedule.remove(self)
             self.model.grid.move_agent(self, next_move)
