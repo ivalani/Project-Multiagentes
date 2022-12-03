@@ -123,6 +123,8 @@ def getTrafficLightState():
                             "y": 1,
                             "z": z,
                             "state": i.state,
+                            "horizontal": i.horizontal,
+                            "vertical": i.vertical,
                         })
             cprint("Traffic lights state received!")
             return jsonify({"positions": trafficLights})
