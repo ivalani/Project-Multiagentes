@@ -15,7 +15,6 @@
 - Alfredo Jeong Hyun Park
 - Iwalani Amador Piaga 
 - Tonatiuh Reyes Huerta 
-- Andrea Serrano Diego
 
 _Para saber mas sobre quienes integran el proyecto, puede leer "Sobre el equipo" aqui: [Sobre el equipo](https://github.com/ivalani/Project-Multiagentes/blob/main/Arranque_de_proyecto/integrantes.md)_
 

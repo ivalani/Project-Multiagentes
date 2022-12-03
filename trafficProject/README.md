@@ -12,9 +12,28 @@
 
 --- 
 ## _Instalacion_
-Para instalar los requerimientos usamos
+Para poder probar el proyecto es necesario clonar el repositorio e instalas los requerimientos incluidos en el archivo txt, como en el siguiente ejemplo. 
 
-    pip install -r requirements.txt
+```powershell
+Windows PowerShell
+Copyright (C) Microsoft Corporation. Todos los derechos reservados.
+
+Prueba la nueva tecnología PowerShell multiplataforma https://aka.ms/pscore6
+
+PS C:\Users\> cd Downloads
+PS C:\Users\Downloads> git clone https://github.com/ivalani/Project-Multiagentes.git
+
+--- Cloning into "Project-Multiagentes" ..... Finished
+
+PS C:\Users\Downloads> cd Project-Multiagentes
+PS C:\Users\Downloads\cd Project-Multiagentes>pip install -r requirements.txt
+```
+
+Una vez finalizados estos pasos podemos pasar al siguiente paso, que es correr nuestro programa, para ello primero es necesario encender el servidor de flask que se encuentra en trafficProject/Server/serverFlask.py 
+
+Despues de correr "serverFlask.py", podemos abrir en Unity la carpeta de TrafficVisualization e ir a la escena "BuildCity", donde al tener encendido el servidos podremos correr la escena y ver la ciudad inteligente. 
+
+
 ## _Propuesta formal_ 
 
 Al inicio del bloque se diseño una propuesta formal inicial que ha tenido leve cambios que se podran ver en el desarrollo de cada uno de los avances reportados. 
@@ -25,7 +44,7 @@ Esta parte de la entrega cuenta como el primer avance del proyecto, que conforma
 
 ## _Tarea M4_ 
 Conforma el inicio y el modelado de los agentes que interactuan en la ciudad. 
-Puedes ver mas a detalle [aqui](https://github.com/ivalani/Project-Multiagentes/blob/main/Arranque_de_proyecto/propuesta.md)
+Puedes ver mas a detalle [aqui](https://github.com/ivalani/Project-Multiagentes/blob/main/trafficProject/Documents/M4.md)
 
 ## _Modelacion de agentes_ 
 Esta parte del proyecto se cuenta como el segundo avance del proyecto, donde: 

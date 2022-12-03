@@ -14,22 +14,9 @@
 - Alfredo Jeong Hyun Park
 - Iwalani Amador Piaga 
 - Tonatiuh Reyes Huerta 
-- Andrea Serrano Diego
 
 
 ## _Fortalezas y debilidades del equipo_
-
-## <center>**Andrea Serrano Diego**</center>
-
-<div style="margin-left: auto;
-            margin-right: auto;
-            width: 30%">
-
-|      Fortallezas                      |  Debilidades                     |
-|         -                             |      -                           |
-|  Resolución de problemas.             | Manejo de nuevas herramientas.   |
-| Responsable con las tareas asignadas. |                                  |
-</div>
 
 ## <center>**Diego Mellado Oliveros**</center>
 
