@@ -27,7 +27,6 @@ public class AgentData
 }
 
 [Serializable]
-
 public class AgentsData
 {
     public List<AgentData> positions;
@@ -78,8 +77,9 @@ public class AgentController : MonoBehaviour
     Dictionary<string, GameObject> cars;
     Dictionary<string, GameObject> buses;
     Dictionary<string, GameObject> pedestrians;
-    Dictionary<string, TrafficLightData> lightData;
+    Dictionary<string, GameObject> lights;
     Dictionary<string, AgentData> carData;
+    Dictionary<string, TrafficLightData> lightState;
 
     Dictionary<string, Vector3> carPrevPositions, carCurrPositions;
     Dictionary<string, Vector3> pedestrianPrevPositions, pedestrianCurrPositions;
@@ -105,12 +105,14 @@ public class AgentController : MonoBehaviour
         pedestrianCurrPositions = new Dictionary<string, Vector3>();
 
         lightsPositions = new Dictionary<string, Vector3>();
+        lightState = new Dictionary<string, TrafficLightData>();
 
         carData = new Dictionary<string, AgentData>();
 
         cars = new Dictionary<string, GameObject>();
         buses = new Dictionary<string, GameObject>();
         pedestrians = new Dictionary<string, GameObject>();
+        lights = new Dictionary<string, GameObject>();
         
         timer = timeToUpdate;
 
@@ -146,20 +148,34 @@ public class AgentController : MonoBehaviour
             }
             foreach(var agent in pedestrianCurrPositions)
             {
-                // Debug.Log(agent);
                 Vector3 currentPosition = agent.Value;
                 Vector3 previousPosition = pedestrianPrevPositions[agent.Key];
 
                 Vector3 interpolated = Vector3.Lerp(previousPosition, currentPosition, dt);
                 Vector3 direction = currentPosition - interpolated;
 
-                pedestrians[agent.Key].transform.localPosition = interpolated;
+                if (pedestrians[agent.Key]) pedestrians[agent.Key].transform.localPosition = interpolated;
                 if(direction != Vector3.zero) pedestrians[agent.Key].transform.rotation = Quaternion.LookRotation(direction);
                 
             }
             foreach(var agent in lightsPositions)
             {
-                Debug.Log(agent.Key);
+                var redLight = lights[agent.Key].transform.Find("RedLight").gameObject;
+                var greenLight = lights[agent.Key].transform.Find("GreenLight").gameObject;
+                if (lightState[agent.Key].state == false)
+                {
+                    Debug.Log(agent.Key);
+                    Debug.Log(lightState[agent.Key].state);
+                    greenLight.SetActive(false);
+                    redLight.SetActive(true);
+                }
+                if (lightState[agent.Key].state == true)
+                {    
+                    Debug.Log(agent.Key);
+                    Debug.Log(lightState[agent.Key].state);
+                    greenLight.SetActive(true);
+                    redLight.SetActive(false);
+                }
             }
             // float t = (timer / timeToUpdate);
             // dt = t * t * ( 3f - 2f*t);
@@ -178,6 +194,7 @@ public class AgentController : MonoBehaviour
             StartCoroutine(GetCarsData());
             // StartCoroutine(GetBusesData());
             StartCoroutine(GetPedestriansData());
+            StartCoroutine(GetTrafficLightData());
         }
     }
 
@@ -203,11 +220,11 @@ public class AgentController : MonoBehaviour
             Debug.Log("Configuration upload complete!");
             Debug.Log("Getting Agents positions");
             StartCoroutine(GetCarsData());
-            // StartCoroutine(GetBusesData());
             StartCoroutine(GetPedestriansData());
             StartCoroutine(GetTrafficLightData());
         }
     }
+
 
     IEnumerator GetCarsData() 
     {
@@ -239,8 +256,6 @@ public class AgentController : MonoBehaviour
                         carCurrPositions[agent.id] = newAgentPosition;
                     }
             }
-
-
         }
     }
 
@@ -287,13 +302,19 @@ public class AgentController : MonoBehaviour
         else 
         {
             trafficLightData = JsonUtility.FromJson<TrafficLightsData>(www.downloadHandler.text);
-
             foreach(TrafficLightData obstacle in trafficLightData.positions)
             {
-                Instantiate(trafficLightPrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.identity);
-                lightsPositions[obstacle.id] = new Vector3(obstacle.x, obstacle.y, obstacle.z);
+                if (!started)
+                {
+                    lights[obstacle.id] = Instantiate(trafficLightPrefab, new Vector3(obstacle.x, obstacle.y, obstacle.z), Quaternion.Euler(0,-90,0));
+                    lightsPositions[obstacle.id] = new Vector3(obstacle.x, obstacle.y, obstacle.z);
+                    lightState[obstacle.id] = obstacle;
+                }
+                else
+                {
+                    lightState[obstacle.id] = obstacle;
+                }
             }
-
             updated = true;
             if(!started) started = true;
         }
