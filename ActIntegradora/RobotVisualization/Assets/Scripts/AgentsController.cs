@@ -151,7 +151,7 @@ public class AgentsController : MonoBehaviour
     {
         if(timer < 0)
         {
-            timer -= timeToUpdate;
+            timer = timeToUpdate;
             updated = false;
             StartCoroutine(updateSimulation());
 
