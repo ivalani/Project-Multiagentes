@@ -48,6 +48,10 @@ class RandomModel(Model):
                         agent = Obstacle(f"ob_{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
 
+                    elif col == "A":
+                        agent = Angel(f"ob_{r*self.width+c}", self)
+                        self.grid.place_agent(agent, (c, self.height - r - 1))
+
                     elif col == "D":
                         agent = Destination(f"d_{r*self.width+c}", self)
                         self.schedule.add(agent)
