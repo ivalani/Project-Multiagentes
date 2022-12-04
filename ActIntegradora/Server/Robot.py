@@ -179,9 +179,11 @@ class RobotAgent(Agent):
         # Now move:
         if self.random.random() < 100:
             self.model.grid.move_agent(self, next_move)
+            # Exception when reached destination for last_box but didnt find a box.
             if self.pos == self.last_box:
                 self.last_box = None
             self.steps_taken+=1
+            # Removes from the grid the box
             if self.with_box and boxesPos != []:
                 boxesAround[i].pickedUp = True
                 boxesAround[i].canbePickedUp = False
@@ -197,6 +199,9 @@ class RobotAgent(Agent):
     def get_closest_dropZone(self,x,y):
         """
         Returns the closest drop zone to the given position
+        Args:
+            x: x coordinate
+            y: y coordinate
         """
         position = y
         # Gets first dropZone coord.
@@ -211,6 +216,9 @@ class RobotAgent(Agent):
     def distance_to(self,posA,posB):
         """
         Returns the distance between two points.
+        Args:
+            posA: position of the first point.
+            posB: position of the second point.
         """
         x1, y1 = posA
         x2, y2 = posB
@@ -257,21 +265,29 @@ class dropZone(Agent):
 
     def OpenBay(self):
         """
-        Drops a box in the drop zone.
+        Can receive boxes until it reaches 5.
         """
+        # List of robots around
         agentsAround = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
         RobotAround = [agent for agent in agentsAround if isinstance(agent, RobotAgent)]
+
         for rob in RobotAround:
+            # If the robot is carrying a box, and is in dropZone drops the box.
             if  rob.pos == self.pos and rob.with_box:
                 rob.with_box = False
                 self.stacked_boxes += 1
                 rob.closest_dropZone = None
                 self.model.remaning_boxes -= 1
+        # When reached 5 boxes, the dropZone changes color to green and behavior to closed.
         if self.stacked_boxes == 5:
             self.model.dropZones.remove(self.pos)
             self.condition = "Full"
 
     def ClosedBay(self):
+        """
+        Cant receive boxes. All agents that come are send to other close dropZone.
+        """
+        # List of robots around
         agentsAround = self.model.grid.get_neighbors(self.pos, moore=False, include_center=True, radius=1)
         RobotAround = [agent for agent in agentsAround if isinstance(agent, RobotAgent)]
         for rob in RobotAround:
