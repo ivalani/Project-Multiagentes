@@ -98,7 +98,7 @@ public class CityMaker : MonoBehaviour
                 // Creates a Roundabout (angel)
                 position = new Vector3(x * tileSize, 0, y * tileSize);
                 tile = Instantiate(angelPrefab, position, Quaternion.identity);
-                tile.transform.localScale = new Vector3(0.5f, Random.Range(0.5f, 2.0f), 0.5f);
+                //tile.transform.localScale = new Vector3(0.4f, Random.Range(0.4f, 1.0f), 0.4f);
                 tile.transform.parent = transform;
                 x += 1;
             }

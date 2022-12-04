@@ -200,7 +200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 136675311}
   m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
-  m_LocalPosition: {x: 12, y: 10, z: -1.5}
+  m_LocalPosition: {x: 12.01, y: 14.27, z: -1.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -334,7 +334,7 @@ MonoBehaviour:
   roadPrefab: {fileID: 6246606598057307937, guid: cec252abf1530674d855d6c68aa20ba1, type: 3}
   destinationPrefab: {fileID: 1954359764678167289, guid: 315e52c44da1ec845aa2a34289ec5eab, type: 3}
   buildingPrefab: {fileID: 5788411017124981246, guid: cc29fa96267ada14fa70eb967b2534a2, type: 3}
-  angelPrefab: {fileID: 919132149155446097, guid: 8eba4b9bd9aa86044baacf522e42bc0b, type: 3}
+  angelPrefab: {fileID: 1183777793682956699, guid: 2ea7ee5d15c962448b13d848c342a67d, type: 3}
   trafficLightPrefab: {fileID: 1205029068795582456, guid: bf25a2013fca20140bdc48c41b00f7b6, type: 3}
   sideWalkPrefab: {fileID: 6658387845575564429, guid: e1f186509f3d769429bd2cb0dd409969, type: 3}
   pedestrianCrossing: {fileID: 4731023752128632314, guid: 340779be9dce0ed439861db978fa8fb8, type: 3}
