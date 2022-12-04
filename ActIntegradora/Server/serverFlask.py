@@ -29,6 +29,7 @@ def initModel():
             boxesDensity = float(request.form.get("BoxesDensity"))
             currentStep = 0
 
+            print(numberAgents, boxesDensity, width, height)
             randomModel = RandomModel(numberAgents, boxesDensity, width, height)
             return jsonify({"message": "Parameters received. Model initiated"})
         except:
@@ -53,10 +54,7 @@ def getRobots():
                             "has_box": i.with_box,
                         }
                     )
-                    if i.with_box:
-                        print("SIUUU")
-        print(robotPositions)
-        return jsonify({"positions": robotPositions})
+        return jsonify({"data": robotPositions})
 
 
 @app.route("/getWall", methods=["GET"])
@@ -84,8 +82,14 @@ def getBoxes():
         for (contents, x, z) in randomModel.grid.coord_iter():
             for i in contents:
                 if isinstance(i, Box):
-                    boxPosition.append({"id": str(i.unique_id), "x": x, "y": 1, "z": z})
-        return jsonify({"positions": boxPosition})
+                    boxPosition.append(
+                        {"id": str(i.unique_id), 
+                        "x": x, 
+                        "y": 1, 
+                        "z": z,
+                        "picked": i.pickedUp,
+                        })
+        return jsonify({"data": boxPosition})
 
 
 @app.route("/getDropZone", methods=["GET"])
@@ -102,13 +106,13 @@ def getDropZone():
                         {
                             "id": str(i.unique_id),
                             "x": x,
-                            "y": 1,
+                            "y": 0.5,
                             "z": z,
                             "numberBoxes": i.stacked_boxes,
                         }
                     )
 
-        return jsonify({"positions": dropZonePosition})
+        return jsonify({"data": dropZonePosition})
 
 
 # @app.route("")
@@ -118,15 +122,19 @@ def updateModel():
     global currentStep, randomModel
 
     if request.method == "GET":
-        randomModel.step()
-        currentStep += 1
+        try:
+            randomModel.step()
+            currentStep += 1
 
-        return jsonify(
-            {
-                "message": f"Model updated to step {currentStep}.",
-                "currentStep": currentStep,
-            }
-        )
+            print("Updated")
+            return jsonify(
+                {
+                    "message": f"Model updated to step {currentStep}.",
+                    "currentStep": currentStep,
+                }
+            )
+        except:
+            print("Error al actualizar")
 
 
 if __name__ == "__main__":
